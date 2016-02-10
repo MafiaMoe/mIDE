@@ -1,0 +1,1 @@
+C:\Users\Moe\Documents\GitHub\mIDE\mIDE.csproj;arm
