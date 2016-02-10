@@ -20,9 +20,6 @@ using mIDE.InsertClasses;
 
 namespace mIDE
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
         private AutoCompleteList cmdList;
@@ -92,8 +89,6 @@ namespace mIDE
                 }
             }
 
-            lastCaretPosition = OpenCode.Document.Selection.StartPosition;
-
             return true;
         }
 
@@ -122,7 +117,7 @@ namespace mIDE
                     List<AutoComplete> exactCmds = cmdList.findExactCommand(CaretWord);
                     foreach (AutoComplete cmd in exactCmds)
                     {
-                        autofillListBox.Items.Add(cmd.succeedingString);
+                        autofillListBox.Items.Add(new ListBoxItem { Padding = new Thickness(3), BorderThickness = new Thickness(0.1), Height = 24, Content = cmd.succeedingString });
                         autofillListBox.SelectedIndex = 0;
                     }
                     if (exactCmds.Count == 0)
@@ -132,7 +127,8 @@ namespace mIDE
                         foreach (AutoComplete cmd in cmds)
                         {
                             string addStr = cmd.name.Remove(0, CaretWord.Length);
-                            autofillListBox.Items.Add(cmd.name);
+                            autofillListBox.Items.Add(new ListBoxItem { Padding = new Thickness(3), BorderThickness = new Thickness(0.1), Height = 24, Content = cmd.name });
+                            //autofillListBox.Items.Add(cmd.name);
                             autoCompleteRemove = CaretWord;
                             autofillListBox.SelectedIndex = 0;
                         }
@@ -145,7 +141,7 @@ namespace mIDE
                 List<InsertLink> links = cmdList.findAutoCompleteLinks(CaretWord);
                 foreach (InsertLink link in links)
                 {
-                    autofillListBox.Items.Add(link.LinkAutoComplete);
+                    autofillListBox.Items.Add(new ListBoxItem { Padding = new Thickness(3), BorderThickness = new Thickness(0.1), Height = 24, Content = link.LinkAutoComplete });
                     autoCompleteRemove = link.LinkString;
                     autofillListBox.SelectedIndex = 0;
                 }
@@ -160,21 +156,16 @@ namespace mIDE
                 if (strings[i] != "")
                 {
                     var localWord = OpenCode.Document.GetRange(endIndex - strings[i].Length, endIndex);
-                    /*var localWord = new TextRange(OpenCode.CaretPosition.GetLineStartPosition(0).
-                            GetPositionAtOffset(endIndex - strings[i].Length),
-                            OpenCode.CaretPosition.GetLineStartPosition(0).
-                            GetPositionAtOffset(endIndex));*/
                     string test = localWord.Text;
 
                     List<AutoComplete> coms = cmdList.findExactCommand(strings[i]);
                     if (coms.Count > 0)
                     {
                         localWord.CharacterFormat.ForegroundColor = coms[0].contextColor;
-                        //localWord.ApplyPropertyValue(TextElement.ForegroundProperty, coms[0].contextBrush);
                     }
                     else
                     {
-                        //word.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.WhiteSmoke);
+                        //localWord...
                     }
 
                     endIndex -= strings[i].Length + 1;
@@ -187,14 +178,15 @@ namespace mIDE
         string autoCompleteRemove = "";
         private bool InsertAutocomplete()
         {
-            if (autofillListBox.Items.Count > 0 && autofillListBox.Items[autofillListBox.SelectedIndex].ToString() != "")
+            var selectedAutofillItem = autofillListBox.Items[autofillListBox.SelectedIndex] as ListBoxItem;
+            //if (autofillListBox.Items.Count > 0 && autofillListBox.Items[autofillListBox.SelectedIndex].ToString() != "")
+            if (autofillListBox.Items.Count > 0 && selectedAutofillItem.Content as string != "")
             {
                 UpdateAndClearCaretLineFormatting();
                 if (autoCompleteRemove == "")
                 {
                     //insert autocomplete
-                    OpenCode.Document.Selection.TypeText(autofillListBox.Items[autofillListBox.SelectedIndex].ToString());
-                    SearchLineForCommands();
+                    OpenCode.Document.Selection.TypeText(selectedAutofillItem.Content as string);
                     return true;
                 }
                 else
@@ -202,58 +194,53 @@ namespace mIDE
                     if (CaretWord == autoCompleteRemove)
                     {
                         //remove word and insert autocomplete
-                        string insert = autofillListBox.Items[autofillListBox.SelectedIndex].ToString();
+                        string insert = selectedAutofillItem.Content as string;
                         OpenCode.Document.GetRange(WordStart, WordEnd).Text = insert;
                         OpenCode.Document.Selection.StartPosition += insert.Length;
                         OpenCode.Document.Selection.EndPosition = OpenCode.Document.Selection.StartPosition;
-                        SearchLineForCommands();
                         return true;
                     }
                 }
-                SearchLineForCommands();
             }
+            SearchLineForCommands();
             return false;
         }
 
-        private void SelectNextAutocomplete(KeyRoutedEventArgs e)
+        private bool SelectNextAutocomplete(KeyRoutedEventArgs e)
         {
-            if (autofillListBox.Items.Count > 0 && autofillListBox.Items[0].ToString() != "")
+            if (autofillListBox.Items.Count > 0)
             {
                 if (e.Key == VirtualKey.Down && autofillListBox.SelectedIndex < autofillListBox.Items.Count - 1)
                 {
                     autofillListBox.SelectedIndex++;
-                    OpenCode.Document.Selection.StartPosition = lastCaretPosition;
-                    OpenCode.Document.Selection.EndPosition = lastCaretPosition;
+                    return true;
                 }
                 if (e.Key == VirtualKey.Up && autofillListBox.SelectedIndex > 0)
                 {
                     autofillListBox.SelectedIndex--;
-                    OpenCode.Document.Selection.StartPosition = lastCaretPosition;
-                    OpenCode.Document.Selection.EndPosition = lastCaretPosition;
+                    return true;
                 }
             }
+            return false;
         }
 
-        private int lastCaretPosition = 0;
+        private void OpenCode_SelectionChanged(object sender, RoutedEventArgs e)
+        {
+            SearchLineForCommands();
+        }
+
         private void RichTextBox_KeyUp(object sender, KeyRoutedEventArgs e)
         {
             switch (e.Key)
             {
                 case VirtualKey.Down:
                 case VirtualKey.Up:
-                    SelectNextAutocomplete(e);
+                    if (autofillListBox.Items.Count == 0) { SearchLineForCommands(); }
                     break;
                 default:
                     SearchLineForCommands();
                     break;
             }
-            //lastCaretPosition = OpenCode.CaretPosition;
-        }
-
-        private void OpenCode_PointerReleased(object sender, PointerRoutedEventArgs e)
-        {
-            SearchLineForCommands();
-            //lastCaretPosition = OpenCode.CaretPosition;
         }
 
         private void OpenCode_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -263,6 +250,10 @@ namespace mIDE
                 case VirtualKey.Tab:
                     if (!InsertAutocomplete()) { OpenCode.Document.Selection.TypeText("\t"); }
                     e.Handled = true;
+                    break;
+                case VirtualKey.Down:
+                case VirtualKey.Up:
+                    if (SelectNextAutocomplete(e)) { e.Handled = true; }
                     break;
             }
         }

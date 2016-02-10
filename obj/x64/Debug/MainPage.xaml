@@ -118,9 +118,8 @@
 
         </StackPanel>
 
-        <RichEditBox x:ConnectionId='1' x:Name="OpenCode" Margin="10,70,10,10" Background="#FF626368" Foreground="#FFD0D4DC"                           FontFamily="Consolas"                                                                       UseSystemFocusVisuals="True" Style="{StaticResource RichEditBoxStyle1}">
-        </RichEditBox>
-        <StackPanel HorizontalAlignment="Left" Height="26" Margin="10,44,0,0" VerticalAlignment="Top" Width="795"/>
+        <RichEditBox x:ConnectionId='1' x:Name="OpenCode" Margin="10,70,10,10" Background="#FF626368" Foreground="#FFD0D4DC"                           FontFamily="Consolas"                            UseSystemFocusVisuals="True" Style="{StaticResource RichEditBoxStyle1}" BorderBrush="#FF262729"                                             />
+        <StackPanel HorizontalAlignment="Left" Height="26" Margin="10,44,0,0" VerticalAlignment="Top" Width="795" Background="#FF262729"/>
 
         <GridView Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Black"/>
 
@@ -131,7 +130,13 @@
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
 
-            <ListBox x:ConnectionId='2' x:Name="autofillListBox" Margin="10,10,10,10" Background="#FF626368" Foreground="#FFD0D4DC"/>
+            <ListBox x:ConnectionId='2' x:Name="autofillListBox" Margin="10" Background="#FF626368" Foreground="#FFD0D4DC" FontFamily="Consolas">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" FontSize="8" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
 
             <GridView Grid.Row="1" Background="Black" HorizontalAlignment="Stretch" ManipulationMode="TranslateY"/>
 

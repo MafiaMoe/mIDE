@@ -19,9 +19,10 @@
       <RootProperty Name="FontFamily" />
       <RootProperty Name="UseSystemFocusVisuals" />
       <RootProperty Name="Style" />
+      <RootProperty Name="BorderBrush" />
       <RootEvent Name="KeyUp" />
-      <RootEvent Name="PointerReleased" />
       <RootEvent Name="KeyDown" />
+      <RootEvent Name="SelectionChanged" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.FrameworkElement">
       <RootProperty Name="MinWidth" />
@@ -137,6 +138,8 @@
       <RootProperty Name="Margin" />
       <RootProperty Name="Background" />
       <RootProperty Name="Foreground" />
+      <RootProperty Name="FontFamily" />
+      <RootProperty Name="ItemTemplate" />
       <RootProperty Name="VerticalAlignment" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.TextBox">
@@ -147,6 +150,14 @@
       <RootProperty Name="Background" />
       <RootProperty Name="Foreground" />
     </RootType>
+    <RootType FullName="Windows.UI.Xaml.DataTemplate">
+      <RootProperty Name="Template" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Controls.TextBlock">
+      <RootProperty Name="Text" />
+      <RootProperty Name="FontSize" />
+    </RootType>
+    <RootType FullName="Windows.UI.Xaml.Data.Binding" />
     <RootType FullName="Microsoft.Xaml.DirectUI.ProxyTypes.StaticResourceExtension" />
     <RootType FullName="Windows.UI.Xaml.Controls.Button">
       <RootProperty Name="Content" />
