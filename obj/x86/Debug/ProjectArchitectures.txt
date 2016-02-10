@@ -1,0 +1,1 @@
+c:\users\moe\documents\visual studio 2015\Projects\mIDE\mIDE\mIDE.csproj;x86
