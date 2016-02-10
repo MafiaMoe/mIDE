@@ -6,6 +6,7 @@ using Windows.System;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -13,7 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using mIDE.AutoComplete;
+using mIDE.InsertClasses;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -118,8 +119,8 @@ namespace mIDE
                 if (CaretLocationInWord == CaretWord.Length)
                 {
                     //search for exact commands and fill the autocomplete
-                    List<AutoComplete.AutoComplete> exactCmds = cmdList.findExactCommand(CaretWord);
-                    foreach (AutoComplete.AutoComplete cmd in exactCmds)
+                    List<AutoComplete> exactCmds = cmdList.findExactCommand(CaretWord);
+                    foreach (AutoComplete cmd in exactCmds)
                     {
                         autofillListBox.Items.Add(cmd.succeedingString);
                         autofillListBox.SelectedIndex = 0;
@@ -127,8 +128,8 @@ namespace mIDE
                     if (exactCmds.Count == 0)
                     {
                         //if no exact commands were found, search for partial commands and fill autocomplete
-                        List<AutoComplete.AutoComplete> cmds = cmdList.findCommandStartingWith(CaretWord);
-                        foreach (AutoComplete.AutoComplete cmd in cmds)
+                        List<AutoComplete> cmds = cmdList.findCommandStartingWith(CaretWord);
+                        foreach (AutoComplete cmd in cmds)
                         {
                             string addStr = cmd.name.Remove(0, CaretWord.Length);
                             autofillListBox.Items.Add(cmd.name);
@@ -165,10 +166,10 @@ namespace mIDE
                             GetPositionAtOffset(endIndex));*/
                     string test = localWord.Text;
 
-                    List<AutoComplete.AutoComplete> coms = cmdList.findExactCommand(strings[i]);
+                    List<AutoComplete> coms = cmdList.findExactCommand(strings[i]);
                     if (coms.Count > 0)
                     {
-                        localWord.CharacterFormat.ForegroundColor = Windows.UI.Colors.Blue;
+                        localWord.CharacterFormat.ForegroundColor = coms[0].contextColor;
                         //localWord.ApplyPropertyValue(TextElement.ForegroundProperty, coms[0].contextBrush);
                     }
                     else

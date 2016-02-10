@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 
-namespace mIDE.AutoComplete
+namespace mIDE.InsertClasses
 {
     class AutoCompleteList
     {
@@ -24,23 +25,23 @@ namespace mIDE.AutoComplete
         private void LoadDefaults()
         {
             if (Commands == null) throw new Exception("Commands list not initialized");
-            Commands.Add(new AutoComplete("PRINT", " <STR> AT"));//, Brushes.Blue));
-            Commands.Add(new AutoComplete("PRINT", " <VAR> AT"));//, Brushes.Blue));
-            Commands.Add(new AutoComplete("PRINT", " <NUM> AT"));//, Brushes.Blue));
-            Commands.Add(new AutoComplete("AT", "(<INT>, <INT>)."));//, Brushes.LightBlue));
-            Commands.Add(new AutoComplete("SET", " <VAR> TO"));//, Brushes.Plum));
-            Commands.Add(new AutoComplete("SET", " <PROP> TO"));//, Brushes.Plum));
-            Commands.Add(new AutoComplete("LOCK", " <VAR> TO"));//, Brushes.Red));
-            Commands.Add(new AutoComplete("LOCK", " <PROP> TO"));//, Brushes.Red));
-            Commands.Add(new AutoComplete("TO", " <VAR>."));//, Brushes.Teal));
-            Commands.Add(new AutoComplete("TO", " <NUM>."));//, Brushes.Teal));
-            Commands.Add(new AutoComplete("TO", " <STR>."));//, Brushes.Teal));
-            Commands.Add(new AutoComplete("TO", " <CONSTR>."));//, Brushes.Teal));
-            Commands.Add(new AutoComplete("LIST", " <LIST> IN."));//, Brushes.Orange));
-            Commands.Add(new AutoComplete("IN", " <VAR>."));//, Brushes.DarkOrange));
-            Commands.Add(new AutoComplete("PIDLOOP", "(<NUM>, <NUM>, <NUM>, <NUM>, <NUM>)."));//, Brushes.Green));
-            Commands.Add(new AutoComplete("PIDLOOP", "(<NUM>, <NUM>, <NUM>)."));//, Brushes.Green));
-            Commands.Add(new AutoComplete("PIDLOOP", "()."));//, Brushes.Green));
+            Commands.Add(new AutoComplete("PRINT", " <STR> AT", Colors.Blue));
+            Commands.Add(new AutoComplete("PRINT", " <VAR> AT", Colors.Blue));
+            Commands.Add(new AutoComplete("PRINT", " <NUM> AT", Colors.Blue));
+            Commands.Add(new AutoComplete("AT", "(<INT>, <INT>).", Colors.LightBlue));
+            Commands.Add(new AutoComplete("SET", " <VAR> TO", Colors.Plum));
+            Commands.Add(new AutoComplete("SET", " <PROP> TO", Colors.Plum));
+            Commands.Add(new AutoComplete("LOCK", " <VAR> TO", Colors.Red));
+            Commands.Add(new AutoComplete("LOCK", " <PROP> TO", Colors.Red));
+            Commands.Add(new AutoComplete("TO", " <VAR>.", Colors.Teal));
+            Commands.Add(new AutoComplete("TO", " <NUM>.", Colors.Teal));
+            Commands.Add(new AutoComplete("TO", " <STR>.", Colors.Teal));
+            Commands.Add(new AutoComplete("TO", " <CONSTR>.", Colors.Teal));
+            Commands.Add(new AutoComplete("LIST", " <LIST> IN.", Colors.Orange));
+            Commands.Add(new AutoComplete("IN", " <VAR>.", Colors.DarkOrange));
+            Commands.Add(new AutoComplete("PIDLOOP", "(<NUM>, <NUM>, <NUM>, <NUM>, <NUM>)", Colors.Green));
+            Commands.Add(new AutoComplete("PIDLOOP", "(<NUM>, <NUM>, <NUM>)", Colors.Green));
+            Commands.Add(new AutoComplete("PIDLOOP", "()", Colors.Green));
 
             if (AutoCompleteLinks == null) throw new Exception("AutoComplete list not initialized");
             AutoCompleteLinks.Add(new InsertLink("<VAR>", "testVariable"));

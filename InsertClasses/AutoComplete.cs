@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI;
 
-namespace mIDE.AutoComplete
+namespace mIDE.InsertClasses
 {
     class AutoComplete
     {
         public string name;
         public string succeedingString;
         //public List<SucceedingValue> succeedingValues;
-        //public Brush contextBrush;
+        public Color contextColor;
 
         /*
         public Command(String Name, List<SucceedingValue> SucceedingValues, Brush ContextBrush)
@@ -22,11 +23,11 @@ namespace mIDE.AutoComplete
         }
         */
 
-        public AutoComplete(string Name, string SucceedingString)//, Brush ContextBrush)
+        public AutoComplete(string Name, string SucceedingString, Color ContextColor)
         {
             this.name = Name;
             this.succeedingString = SucceedingString;
-            //this.contextBrush = ContextBrush;
+            this.contextColor = ContextColor;
         }
     }
 

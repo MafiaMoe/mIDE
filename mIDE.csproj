@@ -98,9 +98,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AutoComplete\AutoComplete.cs" />
-    <Compile Include="AutoComplete\AutoCompleteList.cs" />
-    <Compile Include="AutoComplete\Links.cs" />
+    <Compile Include="InsertClasses\AutoComplete.cs" />
+    <Compile Include="InsertClasses\AutoCompleteList.cs" />
+    <Compile Include="InsertClasses\Links.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

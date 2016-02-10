@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace mIDE.AutoComplete
+namespace mIDE.InsertClasses
 {
     public enum VariableType { Integer, Decimal, String, Function, Unknown, Other };
 
