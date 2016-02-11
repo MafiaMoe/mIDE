@@ -166,6 +166,9 @@
       <RootProperty Name="FontSize" />
       <RootProperty Name="BorderThickness" />
       <RootProperty Name="BorderBrush" />
+      <RootProperty Name="Margin" />
+      <RootProperty Name="VerticalAlignment" />
+      <RootEvent Name="Tapped" />
     </RootType>
     <RootType FullName="mIDE.MainPage" />
   </Roots.RootTypes>

@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using mIDE.InsertClasses;
+using mIDE.DocumentHelpers;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -23,12 +24,21 @@ namespace mIDE
     public sealed partial class MainPage : Page
     {
         private AutoCompleteList cmdList;
+        private ActiveDocumentList docList;
+        private ActiveDocument docShow;
 
         public MainPage()
         {
             cmdList = new AutoCompleteList();
+            docList = new ActiveDocumentList();
 
             this.InitializeComponent();
+        }
+
+        private void ShowDocument(ActiveDocument doc)
+        {
+            docShow = doc;
+            OpenCode.Document.SetText(Windows.UI.Text.TextSetOptions.FormatRtf, docShow.Text);
         }
 
         private void SearchForAutoComplete()
@@ -227,6 +237,124 @@ namespace mIDE
         private void OpenCode_SelectionChanged(object sender, RoutedEventArgs e)
         {
             SearchLineForCommands();
+        }
+
+        private async void Open_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            // Open a text file.
+            var open = new Windows.Storage.Pickers.FileOpenPicker();
+            open.SuggestedStartLocation =
+                Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            open.FileTypeFilter.Add(".ks");
+
+            Windows.Storage.StorageFile file = await open.PickSingleFileAsync();
+            //File.SetAttributes(file.Path, FileAttributes.Normal);
+
+            if (file != null)
+            {
+                try
+                {
+                    var doc = new ActiveDocument(await Windows.Storage.FileIO.ReadTextAsync(file));
+                    doc.Visible = true;
+                    doc.FilePath = file.Path;
+                    docList.Add(doc);
+                    ShowDocument(doc);
+                }
+                catch (Exception ex)
+                {
+                    ContentDialog errorDialog = new ContentDialog()
+                    {
+                        Title = ex.ToString(),//"File open error",
+                        Content = "Sorry, I can't do that...",
+                        PrimaryButtonText = "Ok"
+                    };
+
+                    await errorDialog.ShowAsync();
+                }
+            }
+        }
+
+        private async void Save_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (docShow != null)
+            {
+                string text;
+                OpenCode.Document.GetText(Windows.UI.Text.TextGetOptions.None, out text);
+                docShow.Text = text;
+                if (docShow.FilePath != null && docShow.FileName != null)
+                {
+                    try
+                    {
+                        var storeFolder = await Windows.Storage.StorageFolder.GetFolderFromPathAsync(docShow.FilePath);
+                        File.SetAttributes(docShow.FilePath, FileAttributes.Normal);
+                        var storeFile = await storeFolder.GetFileAsync(docShow.FileName);
+                        await Windows.Storage.FileIO.WriteTextAsync(storeFile, docShow.Text);
+                    }
+                    catch (Exception ex)
+                    {
+                        ContentDialog errorDialog = new ContentDialog()
+                        {
+                            Title = ex.ToString(),//"File open error",
+                            Content = "Sorry, I can't do that...",
+                            PrimaryButtonText = "Ok"
+                        };
+
+                        await errorDialog.ShowAsync();
+
+                        SaveAs();
+                    }
+                }
+                else { SaveAs(); }
+            }
+            else { SaveAs(); }
+        }
+
+        private async void SaveAs()
+        {
+            var savePicker = new Windows.Storage.Pickers.FileSavePicker();
+            savePicker.SuggestedStartLocation =
+                Windows.Storage.Pickers.PickerLocationId.DocumentsLibrary;
+            // Dropdown of file types the user can save the file as
+            savePicker.FileTypeChoices.Add("kerboscript", new List<string>() { ".ks" });
+            // Default file name if the user does not type one in or select a file to replace
+            savePicker.SuggestedFileName = docShow.FileName;
+
+            Windows.Storage.StorageFile file = await savePicker.PickSaveFileAsync();
+            if (file != null)
+            {
+                try
+                {
+                    // Prevent updates to the remote version of the file until
+                    // we finish making changes and call CompleteUpdatesAsync.
+                    Windows.Storage.CachedFileManager.DeferUpdates(file);
+                    // write to file
+                    string text;
+                    OpenCode.Document.GetText(Windows.UI.Text.TextGetOptions.None, out text);
+                    docShow.Text = text;
+                    await Windows.Storage.FileIO.WriteTextAsync(file, docShow.Text);
+                    // Let Windows know that we're finished changing the file so
+                    // the other app can update the remote version of the file.
+                    // Completing updates may require Windows to ask for user input.
+                    Windows.Storage.Provider.FileUpdateStatus status =
+                        await Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file);
+                }
+                catch (Exception ex)
+                {
+                    ContentDialog errorDialog = new ContentDialog()
+                    {
+                        Title = ex.ToString(),//"File open error",
+                        Content = "Sorry, I can't do that...",
+                        PrimaryButtonText = "Ok"
+                    };
+
+                    await errorDialog.ShowAsync();
+                }
+            }
+        }
+
+        private void SaveAll_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
         }
 
         private void RichTextBox_KeyUp(object sender, KeyRoutedEventArgs e)

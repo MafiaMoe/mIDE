@@ -98,6 +98,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DocumentHelpers\ActiveDocument.cs" />
     <Compile Include="InsertClasses\AutoComplete.cs" />
     <Compile Include="InsertClasses\AutoCompleteList.cs" />
     <Compile Include="InsertClasses\Links.cs" />
