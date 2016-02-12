@@ -10,7 +10,7 @@ Highlight functions for easier identification of code components
 AutoComplete of functions and variables inserts the selected function in the top right
   Starting to type a function shows the matching functions to complete
   Setting the caret at the end of a function shows ways to implement that function
-  Setting the caret to a "<VAR>" shows list of variables found withing the script
+  Setting the caret to a "^VAR^" shows list of variables found withing the script
 
 
 Planned Features:
