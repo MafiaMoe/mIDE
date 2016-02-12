@@ -22,13 +22,13 @@
     <AppXManifest Include="C:\Users\Moe\Documents\GitHub\mIDE\bin\x64\Debug\Core\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2016-02-12T02:00:13.235</Modified>
+      <Modified>2016-02-12T06:46:52.126</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="C:\Users\Moe\Documents\GitHub\mIDE\bin\x64\Debug\mIDE.exe">
       <PackagePath>entrypoint\mIDE.exe</PackagePath>
-      <Modified>2016-02-12T02:00:12.618</Modified>
+      <Modified>2016-02-12T06:46:51.785</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Moe\.nuget\packages\Microsoft.ApplicationInsights\1.0.0\lib\portable-win81+wpa81\Microsoft.ApplicationInsights.dll">
       <PackagePath>Microsoft.ApplicationInsights.dll</PackagePath>
@@ -498,7 +498,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Moe\Documents\GitHub\mIDE\bin\x64\Debug\mIDE.xr.xml">
       <PackagePath>mIDE.xr.xml</PackagePath>
-      <Modified>2016-02-12T01:46:59.424</Modified>
+      <Modified>2016-02-12T02:12:12.710</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Program Files %28x86%29\Windows Kits\10\UnionMetadata\Windows.winmd">
       <PackagePath>WinMetadata\Windows.winmd</PackagePath>
@@ -506,11 +506,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Moe\Documents\GitHub\mIDE\bin\x64\Debug\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2016-02-12T02:00:13.134</Modified>
+      <Modified>2016-02-12T03:50:59.577</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="C:\Users\Moe\Documents\GitHub\mIDE\bin\x64\Debug\Core\mIDE.exe">
       <PackagePath>mIDE.exe</PackagePath>
-      <Modified>2016-02-12T02:00:13.233</Modified>
+      <Modified>2016-02-12T06:46:52.125</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

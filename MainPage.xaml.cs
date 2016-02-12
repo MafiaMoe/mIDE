@@ -40,6 +40,31 @@ namespace mIDE
             docShow = doc;
             OpenCode.Document.SetText(Windows.UI.Text.TextSetOptions.FormatRtf, docShow.Text);
             UpdateVisibleFilesTab();
+            UpdateAllLines();
+        }
+
+        private void UpdateAllLines()
+        {
+            string allLines;
+            OpenCode.Document.GetText(Windows.UI.Text.TextGetOptions.None, out allLines);
+            allLines.Replace('\v', '\r');
+            string[] splitLines = allLines.Split('\r');
+
+            //find the line that the caret is on
+            int offset = 0;
+            int currentLine = splitLines.Length - 1;
+            while (offset < allLines.Length)
+            {
+                if (splitLines[currentLine].Length > 0)
+                {
+                    SearchLineForCommands(
+                        allLines.Length - offset - splitLines[currentLine].Length,
+                        allLines.Length - offset);
+                }
+
+                offset += splitLines[currentLine].Length + 1;
+                currentLine--;
+            }
         }
 
         private void FileTab_Tapped(object sender, TappedRoutedEventArgs e)
@@ -68,15 +93,10 @@ namespace mIDE
             }
         }
 
-        private void SearchForAutoComplete()
-        {
-
-        }
-
         private string CaretLine = null;
-        private int LineStart = 0, LineEnd = 0;
+        private int CaretLineStart = 0, CaretLineEnd = 0;
         private string CaretWord = null;
-        private int WordStart = 0, WordEnd = 0;
+        private int CaretWordStart = 0, CaretWordEnd = 0;
         private int CaretLocationInWord = 0;
         private bool UpdateCaretText()
         {
@@ -100,8 +120,8 @@ namespace mIDE
                 else
                 {
                     CaretLine = splitLines[currentLine];
-                    LineStart = lineOffset;
-                    LineEnd = lineOffset + splitLines[currentLine].Length;
+                    CaretLineStart = lineOffset;
+                    CaretLineEnd = lineOffset + splitLines[currentLine].Length;
                 }
             }
 
@@ -120,8 +140,8 @@ namespace mIDE
                 else
                 {
                     CaretWord = splitWords[currentWord];
-                    WordStart = wordOffset;
-                    WordEnd = wordOffset + splitWords[currentWord].Length;
+                    CaretWordStart = wordOffset;
+                    CaretWordEnd = wordOffset + splitWords[currentWord].Length;
                     CaretLocationInWord = OpenCode.Document.Selection.StartPosition - wordOffset;
                 }
             }
@@ -133,16 +153,12 @@ namespace mIDE
         {
             UpdateCaretText();
 
-            var cf = OpenCode.Document.GetRange(LineStart, LineEnd).CharacterFormat;
+            var cf = OpenCode.Document.GetRange(CaretLineStart, CaretLineEnd).CharacterFormat;
             cf.ForegroundColor = Windows.UI.Colors.GhostWhite;
         }
 
-        private char[] stringSeparators = new char[5] { ' ', '(', ')', ',', '.'};
-        private void SearchLineForCommands()
+        private void SearchForAutoComplete()
         {
-            UpdateAndClearCaretLineFormatting();
-            commandSerchTextBox.Text = "";
-
             autofillListBox.Items.Clear();
             autoCompleteRemove = "";
             if (CaretWord != "")
@@ -183,11 +199,26 @@ namespace mIDE
                     autofillListBox.SelectedIndex = 0;
                 }
             }
-            //commandSerchTextBox.Text = text3 + " - " + text4 + "  :  " + text3 + text4;       
+            //commandSerchTextBox.Text = text3 + " - " + text4 + "  :  " + text3 + text4;
+        }
 
+        private void SearchCaretLineForCommands()
+        {
+            UpdateAndClearCaretLineFormatting();
+            commandSerchTextBox.Text = "";
+            SearchLineForCommands(CaretLineStart, CaretLineEnd);
+            SearchForAutoComplete();
+        }
+
+        private char[] stringSeparators = new char[5] { ' ', '(', ')', ',', '.'};
+        private void SearchLineForCommands(int lineStart, int lineEnd)
+        {
             //search for commands from back to front
-            string[] strings = CaretLine.Split(stringSeparators);
-            int endIndex = LineEnd;
+            var textRange = OpenCode.Document.GetRange(lineStart, lineEnd);
+            string outString;
+            textRange.GetText(Windows.UI.Text.TextGetOptions.None, out outString);
+            string[] strings = outString.Split(stringSeparators);
+            int endIndex = lineEnd;
             for (int i = strings.Length - 1; i >= 0; i--)
             {
                 if (strings[i] != "")
@@ -203,6 +234,7 @@ namespace mIDE
                     else
                     {
                         //localWord...
+                        localWord.CharacterFormat.ForegroundColor = Colors.GhostWhite;
                     }
 
                     endIndex -= strings[i].Length + 1;
@@ -232,14 +264,14 @@ namespace mIDE
                     {
                         //remove word and insert autocomplete
                         string insert = selectedAutofillItem.Content as string;
-                        OpenCode.Document.GetRange(WordStart, WordEnd).Text = insert;
+                        OpenCode.Document.GetRange(CaretWordStart, CaretWordEnd).Text = insert;
                         OpenCode.Document.Selection.StartPosition += insert.Length;
                         OpenCode.Document.Selection.EndPosition = OpenCode.Document.Selection.StartPosition;
                         return true;
                     }
                 }
             }
-            SearchLineForCommands();
+            SearchCaretLineForCommands();
             return false;
         }
 
@@ -263,7 +295,7 @@ namespace mIDE
 
         private void OpenCode_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            SearchLineForCommands();
+            SearchCaretLineForCommands();
         }
 
         private async void Open_Tapped(object sender, TappedRoutedEventArgs e)
@@ -390,10 +422,10 @@ namespace mIDE
             {
                 case VirtualKey.Down:
                 case VirtualKey.Up:
-                    if (autofillListBox.Items.Count == 0) { SearchLineForCommands(); }
+                    if (autofillListBox.Items.Count == 0) { SearchCaretLineForCommands(); }
                     break;
                 default:
-                    SearchLineForCommands();
+                    SearchCaretLineForCommands();
                     break;
             }
         }
