@@ -56,11 +56,13 @@ namespace mIDE.InsertClasses
     {
         private string linkString;
         private string linkAutoComplete;
+        private string fileSource;
 
-        public InsertLink(string LinkString, string LinkAutoComplete)
+        public InsertLink(string LinkString, string LinkAutoComplete, string FileSource)
         {
             this.linkString = LinkString;
             this.linkAutoComplete = LinkAutoComplete;
+            this.fileSource = FileSource;
         }
 
         public string LinkString
@@ -73,6 +75,12 @@ namespace mIDE.InsertClasses
         {
             get { return linkAutoComplete; }
             set { linkAutoComplete = value; }
+        }
+
+        public string FileSource
+        {
+            get { return fileSource; }
+            set { fileSource = value; }
         }
     }
 }

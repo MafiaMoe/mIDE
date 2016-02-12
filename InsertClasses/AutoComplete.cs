@@ -7,23 +7,14 @@ using Windows.UI;
 
 namespace mIDE.InsertClasses
 {
-    class AutoComplete
+    class Function
     {
         public string name;
         public string succeedingString;
         //public List<SucceedingValue> succeedingValues;
         public Color contextColor;
 
-        /*
-        public Command(String Name, List<SucceedingValue> SucceedingValues, Brush ContextBrush)
-        {
-            this.name = Name;
-            this.succeedingValues = SucceedingValues;
-            this.contextBrush = ContextBrush;
-        }
-        */
-
-        public AutoComplete(string Name, string SucceedingString, Color ContextColor)
+        public Function(string Name, string SucceedingString, Color ContextColor)
         {
             this.name = Name;
             this.succeedingString = SucceedingString;

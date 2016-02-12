@@ -9,13 +9,13 @@ namespace mIDE.InsertClasses
 {
     class AutoCompleteList
     {
-        private List<AutoComplete> Commands;
+        private List<Function> Functions;
         private List<InsertLink> AutoCompleteLinks;
         private List<VariableLink> VariableLinks;
 
         public AutoCompleteList()
         {
-            Commands = new List<AutoComplete>();
+            Functions = new List<Function>();
             AutoCompleteLinks = new List<InsertLink>();
             VariableLinks = new List<VariableLink>();
             LoadDefaults();
@@ -24,55 +24,127 @@ namespace mIDE.InsertClasses
         //load in default commands
         private void LoadDefaults()
         {
-            if (Commands == null) throw new Exception("Commands list not initialized");
-            Commands.Add(new AutoComplete("PRINT", " <STR> AT", Colors.Blue));
-            Commands.Add(new AutoComplete("PRINT", " <VAR> AT", Colors.Blue));
-            Commands.Add(new AutoComplete("PRINT", " <NUM> AT", Colors.Blue));
-            Commands.Add(new AutoComplete("AT", "(<INT>, <INT>).", Colors.LightBlue));
-            Commands.Add(new AutoComplete("SET", " <VAR> TO", Colors.Plum));
-            Commands.Add(new AutoComplete("SET", " <PROP> TO", Colors.Plum));
-            Commands.Add(new AutoComplete("LOCK", " <VAR> TO", Colors.Red));
-            Commands.Add(new AutoComplete("LOCK", " <PROP> TO", Colors.Red));
-            Commands.Add(new AutoComplete("TO", " <VAR>.", Colors.Teal));
-            Commands.Add(new AutoComplete("TO", " <NUM>.", Colors.Teal));
-            Commands.Add(new AutoComplete("TO", " <STR>.", Colors.Teal));
-            Commands.Add(new AutoComplete("TO", " <CONSTR>.", Colors.Teal));
-            Commands.Add(new AutoComplete("LIST", " <LIST> IN.", Colors.Orange));
-            Commands.Add(new AutoComplete("IN", " <VAR>.", Colors.DarkOrange));
-            Commands.Add(new AutoComplete("PIDLOOP", "(<NUM>, <NUM>, <NUM>, <NUM>, <NUM>)", Colors.Green));
-            Commands.Add(new AutoComplete("PIDLOOP", "(<NUM>, <NUM>, <NUM>)", Colors.Green));
-            Commands.Add(new AutoComplete("PIDLOOP", "()", Colors.Green));
+            if (Functions == null) throw new Exception("Commands list not initialized");
+            Functions.Add(new Function("PRINT", " <STR> AT", Colors.Blue));
+            Functions.Add(new Function("PRINT", " ^VAR^ AT", Colors.Blue));
+            Functions.Add(new Function("PRINT", " <NUM> AT", Colors.Blue));
+            Functions.Add(new Function("AT", "(<INT>, <INT>).", Colors.LightBlue));
+            Functions.Add(new Function("SET", " <VAR> TO", Colors.Plum));
+            Functions.Add(new Function("SET", " <PROP> TO", Colors.Plum));
+            Functions.Add(new Function("LOCK", " <VAR> TO", Colors.Red));
+            Functions.Add(new Function("LOCK", " <PROP> TO", Colors.Red));
+            Functions.Add(new Function("TO", " ^VAR^.", Colors.Teal));
+            Functions.Add(new Function("TO", " <NUM>.", Colors.Teal));
+            Functions.Add(new Function("TO", " <STR>.", Colors.Teal));
+            Functions.Add(new Function("TO", " <CONSTR>.", Colors.Teal));
+            Functions.Add(new Function("LIST", " <LIST> IN.", Colors.Orange));
+            Functions.Add(new Function("IN", " <VAR>.", Colors.DarkOrange));
+            Functions.Add(new Function("PIDLOOP", "(<NUM>, <NUM>, <NUM>, <NUM>, <NUM>)", Colors.Green));
+            Functions.Add(new Function("PIDLOOP", "(<NUM>, <NUM>, <NUM>)", Colors.Green));
+            Functions.Add(new Function("PIDLOOP", "()", Colors.Green));
 
             if (AutoCompleteLinks == null) throw new Exception("AutoComplete list not initialized");
-            AutoCompleteLinks.Add(new InsertLink("<VAR>", "testVariable"));
-            AutoCompleteLinks.Add(new InsertLink("<PROP>", "THROTTLE"));
-            AutoCompleteLinks.Add(new InsertLink("<PROP>", "BRAKES"));
-            AutoCompleteLinks.Add(new InsertLink("<PROP>", "LIGHTS"));
-            AutoCompleteLinks.Add(new InsertLink("<PROP>", "SHIP:CONTROL:YAW"));
-            AutoCompleteLinks.Add(new InsertLink("<PROP>", "SHIP:CONTROL:PITCH"));
-            AutoCompleteLinks.Add(new InsertLink("<PROP>", "SHIP:CONTROL:ROLL"));
-            AutoCompleteLinks.Add(new InsertLink("<LIST>", "ENGINES"));
-            AutoCompleteLinks.Add(new InsertLink("<CONSTR>", "PIDLOOP"));
+            //AutoCompleteLinks.Add(new InsertLink("<VAR>", "testVariable", null));
+            AutoCompleteLinks.Add(new InsertLink("PROP", "THROTTLE", null));
+            AutoCompleteLinks.Add(new InsertLink("PROP", "BRAKES", null));
+            AutoCompleteLinks.Add(new InsertLink("PROP", "LIGHTS", null));
+            AutoCompleteLinks.Add(new InsertLink("PROP", "SHIP:CONTROL:YAW", null));
+            AutoCompleteLinks.Add(new InsertLink("PROP", "SHIP:CONTROL:PITCH", null));
+            AutoCompleteLinks.Add(new InsertLink("PROP", "SHIP:CONTROL:ROLL", null));
+            AutoCompleteLinks.Add(new InsertLink("LIST", "ENGINES", null));
+            AutoCompleteLinks.Add(new InsertLink("CONSTR", "PIDLOOP", null));
 
             if (VariableLinks == null) throw new Exception("VariableLinks list not initialized");
-            VariableLinks.Add(new VariableLink("<INT>", VariableType.Integer));
-            VariableLinks.Add(new VariableLink("<NUM>", VariableType.Decimal));
-            VariableLinks.Add(new VariableLink("<STR>", VariableType.String));
+            VariableLinks.Add(new VariableLink("INT", VariableType.Integer));
+            VariableLinks.Add(new VariableLink("NUM", VariableType.Decimal));
+            VariableLinks.Add(new VariableLink("STR", VariableType.String));
         }
 
-        //add in new command (variable)
-        public bool ADD()
+        //clear autocomplete
+        public void ClearAutoCompleteFromFile(string filePath)
         {
-            return false;
+            foreach (InsertLink link in AutoCompleteLinks)
+            {
+                if (link.FileSource == filePath)
+                {
+                    AutoCompleteLinks.Remove(link);
+                }
+            }
         }
 
-        //remove a command (variable)
+        //add autocomplete
+        private char[] stringSeparators = new char[5] { ' ', '(', ')', ',', '\t' };
+        public List<AutoCheckError> CheckAutoCompleteFromFile(string[] fileLines, string filePath)
+        {
+            var returning = new List<AutoCheckError>();
+            for (int lineNum = 0; lineNum < fileLines.Length; lineNum++)
+            {
+                string[] strs = fileLines[lineNum].Split(stringSeparators);
+
+                for (int i = 0; i < strs.Length; i++)
+                {
+                    foreach (Function func in Functions)
+                    {
+                        //find the function name
+                        if (strs[i] == func.name)
+                        {
+                            string variableType = null;
+                            string variableName = null;
+                            //find other parts of the function
+                            string[] funcParts = func.succeedingString.Split(stringSeparators);
+                            int si = i;
+                            int fi = 0;
+                            bool match = true;
+                            while (fi < funcParts.Length && match)
+                            {
+                                //if nothing in function part, move on to next function part
+                                if (funcParts[fi] == "") { fi++; }
+                                //if nothing left in the strings, no match
+                                else if (si > strs.Length) { match = false; }
+                                //if nothing in string part, move on to next string part
+                                else if (strs[si] == "") { si++; }
+                                //if the string parts match, move on with match check
+                                else if (strs[si].Equals(funcParts[fi], 
+                                    StringComparison.CurrentCultureIgnoreCase)) { fi++; si++; }
+                                //if the string is a parameter, save the parameter values and move on
+                                else if (strs[si][0] == '<' && strs[si][strs[si].Length - 1] == '>')
+                                { si++; fi++; variableType = strs[si]; variableName = funcParts[fi]; }
+                                //if the string is a variable that should already be set, check, move on
+                                else if (strs[si][0] == '^' && strs[si][strs[si].Length - 1] == '^')
+                                {
+                                    bool linkFound = false;
+                                    foreach (InsertLink IL in findAutoCompleteLinks(strs[si]))
+                                    {
+                                        if (IL.LinkString.Equals(funcParts[fi], 
+                                            StringComparison.CurrentCultureIgnoreCase))
+                                        {
+                                            linkFound = true;
+                                            break;
+                                        }
+                                    }
+                                    //add error
+                                    if (!linkFound)
+                                    {
+                                        returning.Add(new AutoCheckError(filePath,
+                                            lineNum, 0, 0, 
+                                            "Not defined : " + funcParts[fi]));
+                                    }
+                                    si++; fi++;
+                                }
+                            }
+                            //if a match was made, set any variable found to a new autocomplete
+                        }
+                    }
+                }
+            }
+            return returning;
+        }
 
         //search for a command containing partial string
-        public List<AutoComplete> findCommandStartingWith(string commandName)
+        public List<Function> findCommandStartingWith(string commandName)
         {
-            var coms = new List<AutoComplete>();
-            foreach (AutoComplete com in Commands)
+            var coms = new List<Function>();
+            foreach (Function com in Functions)
             {
                 if (com.name.StartsWith(commandName, StringComparison.CurrentCultureIgnoreCase)) coms.Add(com);
             }
@@ -80,10 +152,10 @@ namespace mIDE.InsertClasses
         }
 
         //search for a command containing complete string
-        public List<AutoComplete> findExactCommand(string commandName)
+        public List<Function> findExactCommand(string commandName)
         {
-            var coms = new List<AutoComplete>();
-            foreach (AutoComplete com in Commands)
+            var coms = new List<Function>();
+            foreach (Function com in Functions)
             {
                 if (com.name.Equals(commandName, StringComparison.CurrentCultureIgnoreCase)) coms.Add(com);
             }
@@ -94,11 +166,36 @@ namespace mIDE.InsertClasses
         public List<InsertLink> findAutoCompleteLinks(string insertionName)
         {
             var links = new List<InsertLink>();
-            foreach (InsertLink link in AutoCompleteLinks)
+            if (insertionName.Length > 1 &&
+                (insertionName[0] == '<' || insertionName[0] == '^') &&
+                (insertionName[insertionName.Length - 1] == '>' || insertionName[insertionName.Length - 1] == '^'))
             {
-                if (link.LinkString.Equals(insertionName, StringComparison.CurrentCultureIgnoreCase)) links.Add(link);
+                foreach (InsertLink link in AutoCompleteLinks)
+                {
+                    var str = insertionName.Remove(insertionName.Length - 1, 1).Remove(0, 1);
+                    if (link.LinkString.Equals(insertionName.Remove(insertionName.Length - 1, 1).Remove(0, 1),
+                        StringComparison.CurrentCultureIgnoreCase)) links.Add(link);
+                }
             }
             return links;
+        }
+    }
+
+    public class AutoCheckError
+    {
+        public string FilePath { get; set; }
+        public int LineNum { get; set; }
+        public int StartIndex { get; set; }
+        public int EndIndex { get; set; }
+        public string ErrorText { get; set; }
+
+        public AutoCheckError(string FilePath, int LineNum, int StartIndex, int EndIndex, string ErrorText)
+        {
+            this.FilePath = FilePath;
+            this.LineNum = LineNum;
+            this.StartIndex = StartIndex;
+            this.EndIndex = EndIndex;
+            this.ErrorText = ErrorText;
         }
     }
 }

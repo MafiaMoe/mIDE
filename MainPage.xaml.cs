@@ -167,8 +167,8 @@ namespace mIDE
                 if (CaretLocationInWord == CaretWord.Length)
                 {
                     //search for exact commands and fill the autocomplete
-                    List<AutoComplete> exactCmds = cmdList.findExactCommand(CaretWord);
-                    foreach (AutoComplete cmd in exactCmds)
+                    List<Function> exactCmds = cmdList.findExactCommand(CaretWord);
+                    foreach (Function cmd in exactCmds)
                     {
                         autofillListBox.Items.Add(new ListBoxItem { Padding = new Thickness(3), BorderThickness = new Thickness(0.1), Height = 24, Content = cmd.succeedingString });
                         autofillListBox.SelectedIndex = 0;
@@ -176,8 +176,8 @@ namespace mIDE
                     if (exactCmds.Count == 0)
                     {
                         //if no exact commands were found, search for partial commands and fill autocomplete
-                        List<AutoComplete> cmds = cmdList.findCommandStartingWith(CaretWord);
-                        foreach (AutoComplete cmd in cmds)
+                        List<Function> cmds = cmdList.findCommandStartingWith(CaretWord);
+                        foreach (Function cmd in cmds)
                         {
                             string addStr = cmd.name.Remove(0, CaretWord.Length);
                             autofillListBox.Items.Add(new ListBoxItem { Padding = new Thickness(3), BorderThickness = new Thickness(0.1), Height = 24, Content = cmd.name });
@@ -210,7 +210,7 @@ namespace mIDE
             SearchForAutoComplete();
         }
 
-        private char[] stringSeparators = new char[5] { ' ', '(', ')', ',', '.'};
+        private char[] stringSeparators = new char[6] { ' ', '(', ')', ',', '.', '\t'};
         private void SearchLineForCommands(int lineStart, int lineEnd)
         {
             //search for commands from back to front
@@ -226,7 +226,7 @@ namespace mIDE
                     var localWord = OpenCode.Document.GetRange(endIndex - strings[i].Length, endIndex);
                     string test = localWord.Text;
 
-                    List<AutoComplete> coms = cmdList.findExactCommand(strings[i]);
+                    List<Function> coms = cmdList.findExactCommand(strings[i]);
                     if (coms.Count > 0)
                     {
                         localWord.CharacterFormat.ForegroundColor = coms[0].contextColor;
