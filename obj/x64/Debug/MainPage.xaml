@@ -111,15 +111,15 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="0" HorizontalAlignment="Left" Height="26" Margin="8,8,0,0" VerticalAlignment="Top" Background="#FF626368" Orientation="Horizontal">
-            <Button x:ConnectionId='5' x:Name="Save" Content="Save" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E"                     />
-            <Button x:ConnectionId='6' x:Name="SaveAll" Content="Sv A" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E"                        />
-            <Button x:ConnectionId='7' x:Name="Open" Content="Open" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E" Margin="0,0,0,3" VerticalAlignment="Bottom"                     />
-            <Button x:ConnectionId='8' x:Name="Compact" Content="Comp" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E"/>
-
+            <Button x:ConnectionId='6' x:Name="Save" Content="Save" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E"                     />
+            <Button x:ConnectionId='7' x:Name="SaveAll" Content="Sv A" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E"                        />
+            <Button x:ConnectionId='8' x:Name="Open" Content="Open" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E" Margin="0,0,0,3" VerticalAlignment="Bottom"                     />
+            <Button x:ConnectionId='9' x:Name="Compact" Content="Comp" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E"/>
         </StackPanel>
 
         <RichEditBox x:ConnectionId='1' x:Name="OpenCode" Margin="10,70,10,10" Background="#FF626368" Foreground="#FFD0D4DC"                           FontFamily="Consolas"                            UseSystemFocusVisuals="True" Style="{StaticResource RichEditBoxStyle1}" BorderBrush="#FF262729"                                             />
-        <StackPanel HorizontalAlignment="Left" Height="26" Margin="10,44,0,0" VerticalAlignment="Top" Width="795" Background="#FF262729"/>
+        
+        <StackPanel x:ConnectionId='2' x:Name="VisibleFilesTab" HorizontalAlignment="Left" Height="22" Margin="10,48,0,0" VerticalAlignment="Top" Width="795" Background="#FF262729" Orientation="Horizontal"/>
 
         <GridView Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Black"/>
 
@@ -130,7 +130,7 @@
                 <RowDefinition Height="2*"/>
             </Grid.RowDefinitions>
 
-            <ListBox x:ConnectionId='2' x:Name="autofillListBox" Margin="10" Background="#FF626368" Foreground="#FFD0D4DC" FontFamily="Consolas">
+            <ListBox x:ConnectionId='3' x:Name="autofillListBox" Margin="10" Background="#FF626368" Foreground="#FFD0D4DC" FontFamily="Consolas">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" FontSize="8" />
@@ -140,8 +140,8 @@
 
             <GridView Grid.Row="1" Background="Black" HorizontalAlignment="Stretch" ManipulationMode="TranslateY"/>
 
-            <TextBox x:ConnectionId='3' x:Name="commandSerchTextBox" Height="23" Margin="10,10,10,0" Grid.Row="2" Text="Search" VerticalAlignment="Top" Background="#FF626368" Foreground="#FFD0D4DC"/>
-            <ListBox x:ConnectionId='4' x:Name="commandViewListBox" Margin="10,38,10,10" Grid.Row="2" VerticalAlignment="Stretch" Background="#FF626368" Foreground="#FFD0D4DC"/>
+            <TextBox x:ConnectionId='4' x:Name="commandSerchTextBox" Height="23" Margin="10,10,10,0" Grid.Row="2" Text="Search" VerticalAlignment="Top" Background="#FF626368" Foreground="#FFD0D4DC"/>
+            <ListBox x:ConnectionId='5' x:Name="commandViewListBox" Margin="10,38,10,10" Grid.Row="2" VerticalAlignment="Stretch" Background="#FF626368" Foreground="#FFD0D4DC"/>
         </Grid>
 
     </Grid>

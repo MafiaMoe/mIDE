@@ -31,6 +31,16 @@ namespace mIDE.DocumentHelpers
             return null;
         }
 
+        public List<ActiveDocument> VisibleDocuents()
+        {
+            List<ActiveDocument> visibleDocs = new List<ActiveDocument>();
+            foreach (ActiveDocument doc in activeDocuments)
+            {
+                if (doc.Visible) { visibleDocs.Add(doc); }
+            }
+            return visibleDocs;
+        }
+
         public void Add(ActiveDocument Document)
         {
             activeDocuments.Add(Document);

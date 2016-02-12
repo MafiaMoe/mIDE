@@ -39,6 +39,33 @@ namespace mIDE
         {
             docShow = doc;
             OpenCode.Document.SetText(Windows.UI.Text.TextSetOptions.FormatRtf, docShow.Text);
+            UpdateVisibleFilesTab();
+        }
+
+        private void FileTab_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            ShowDocument(docList.GetActiveDocument((sender as Button).Name));
+        }
+
+        private void UpdateVisibleFilesTab()
+        {
+            VisibleFilesTab.Children.Clear();
+            foreach (ActiveDocument actDoc in docList.VisibleDocuents())
+            {
+                var button = new Button();
+                button.Height = 20;
+                button.Width = 20 + actDoc.FileName.Length * 5;
+                button.Padding = new Thickness(0);
+                button.BorderThickness = new Thickness(1);
+                button.BorderBrush = new SolidColorBrush(Colors.Black);
+                button.Content = actDoc.FileName;
+                button.Name = actDoc.FilePath;
+                button.FontSize = 10;
+                button.FontFamily = new FontFamily("Consolas");
+                button.Tapped += new TappedEventHandler(FileTab_Tapped);
+                if (docShow.FilePath == actDoc.FilePath) { button.Background = new SolidColorBrush(Colors.DarkGray); }
+                VisibleFilesTab.Children.Add(button);
+            }
         }
 
         private void SearchForAutoComplete()
@@ -292,14 +319,14 @@ namespace mIDE
                     }
                     catch (Exception ex)
                     {
-                        ContentDialog errorDialog = new ContentDialog()
+                        /*ContentDialog errorDialog = new ContentDialog()
                         {
-                            Title = ex.ToString(),//"File open error",
+                            Title = ex.ToString(),//"File save error",
                             Content = "Sorry, I can't do that...",
                             PrimaryButtonText = "Ok"
                         };
 
-                        await errorDialog.ShowAsync();
+                        await errorDialog.ShowAsync();*/
 
                         SaveAs();
                     }
@@ -342,7 +369,7 @@ namespace mIDE
                 {
                     ContentDialog errorDialog = new ContentDialog()
                     {
-                        Title = ex.ToString(),//"File open error",
+                        Title = ex.ToString(),//"File save as error",
                         Content = "Sorry, I can't do that...",
                         PrimaryButtonText = "Ok"
                     };

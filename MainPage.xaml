@@ -115,11 +115,11 @@
             <Button x:Name="SaveAll" Content="Sv A" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E" Tapped="SaveAll_Tapped"/>
             <Button x:Name="Open" Content="Open" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E" Margin="0,0,0,3" VerticalAlignment="Bottom" Tapped="Open_Tapped"/>
             <Button x:Name="Compact" Content="Comp" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E"/>
-
         </StackPanel>
 
         <RichEditBox x:Name="OpenCode" Margin="10,70,10,10" Background="#FF626368" Foreground="#FFD0D4DC" KeyUp="RichTextBox_KeyUp" FontFamily="Consolas" KeyDown="OpenCode_KeyDown" UseSystemFocusVisuals="True" Style="{StaticResource RichEditBoxStyle1}" BorderBrush="#FF262729" SelectionChanged="OpenCode_SelectionChanged"/>
-        <StackPanel HorizontalAlignment="Left" Height="26" Margin="10,44,0,0" VerticalAlignment="Top" Width="795" Background="#FF262729"/>
+        
+        <StackPanel x:Name="VisibleFilesTab" HorizontalAlignment="Left" Height="22" Margin="10,48,0,0" VerticalAlignment="Top" Width="795" Background="#FF262729" Orientation="Horizontal"/>
 
         <GridView Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Black"/>
 
