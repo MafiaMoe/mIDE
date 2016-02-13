@@ -33,6 +33,8 @@ namespace mIDE
             docList = new ActiveDocumentList();
 
             this.InitializeComponent();
+
+            OpenCode.CustomKeyDown += OpenCode_KeyDown;
         }
 
         private void ShowDocument(ActiveDocument doc)
@@ -98,6 +100,7 @@ namespace mIDE
         private string CaretWord = null;
         private int CaretWordStart = 0, CaretWordEnd = 0;
         private int CaretLocationInWord = 0;
+        private int CaretPositionStart = 0, CaretPositionEnd = 0;
         private bool UpdateCaretText()
         {
             string[] returning = new string[2];
@@ -154,7 +157,7 @@ namespace mIDE
             UpdateCaretText();
 
             var cf = OpenCode.Document.GetRange(CaretLineStart, CaretLineEnd).CharacterFormat;
-            cf.ForegroundColor = Windows.UI.Colors.GhostWhite;
+            cf.ForegroundColor = Colors.GhostWhite;
         }
 
         private void SearchForAutoComplete()
@@ -208,6 +211,8 @@ namespace mIDE
             commandSerchTextBox.Text = "";
             SearchLineForCommands(CaretLineStart, CaretLineEnd);
             SearchForAutoComplete();
+            CaretPositionStart = OpenCode.Document.Selection.StartPosition;
+            CaretPositionEnd = OpenCode.Document.Selection.EndPosition;
         }
 
         private char[] stringSeparators = new char[6] { ' ', '(', ')', ',', '.', '\t'};
@@ -416,13 +421,50 @@ namespace mIDE
 
         }
 
+        private void Compact_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            string allLines;
+            OpenCode.Document.GetText(Windows.UI.Text.TextGetOptions.None, out allLines);
+            allLines.Replace('\v', '\r');
+            string[] splitLines = allLines.Split('\r');
+            cmdList.CheckAutoCompleteFromFile(splitLines, docShow.FilePath);
+        }
+
+        int lastCaretPositon = 0;
+
+        private void Page_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case VirtualKey.Down:
+                case VirtualKey.Up:
+                    break;
+            }
+        }
+
+        private void Grid_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            switch(e.Key)
+            {
+                case VirtualKey.Down:
+                case VirtualKey.Up:
+                    break;
+            }
+        }
+
         private void RichTextBox_KeyUp(object sender, KeyRoutedEventArgs e)
         {
             switch (e.Key)
             {
                 case VirtualKey.Down:
                 case VirtualKey.Up:
-                    if (autofillListBox.Items.Count == 0) { SearchCaretLineForCommands(); }
+                    //if (autofillListBox.Items.Count == 0) { SearchCaretLineForCommands(); }
+                    //else
+                    //{
+                    //    SelectNextAutocomplete(e);
+                    //    OpenCode.Document.Selection.StartPosition = CaretPositionStart;
+                    //    OpenCode.Document.Selection.EndPosition = CaretPositionEnd;
+                    //}
                     break;
                 default:
                     SearchCaretLineForCommands();
@@ -440,6 +482,7 @@ namespace mIDE
                     break;
                 case VirtualKey.Down:
                 case VirtualKey.Up:
+                    //is never called
                     if (SelectNextAutocomplete(e)) { e.Handled = true; }
                     break;
             }

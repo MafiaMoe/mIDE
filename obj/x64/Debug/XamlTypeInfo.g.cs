@@ -132,15 +132,19 @@ namespace mIDE.mIDE_XamlTypeInfo
 
         private void InitTypeTables()
         {
-            _typeNameTable = new string[3];
-            _typeNameTable[0] = "mIDE.MainPage";
-            _typeNameTable[1] = "Windows.UI.Xaml.Controls.Page";
-            _typeNameTable[2] = "Windows.UI.Xaml.Controls.UserControl";
+            _typeNameTable = new string[5];
+            _typeNameTable[0] = "mIDE.DocumentHelpers.CustomRichEditBox";
+            _typeNameTable[1] = "Windows.UI.Xaml.Controls.RichEditBox";
+            _typeNameTable[2] = "mIDE.MainPage";
+            _typeNameTable[3] = "Windows.UI.Xaml.Controls.Page";
+            _typeNameTable[4] = "Windows.UI.Xaml.Controls.UserControl";
 
-            _typeTable = new global::System.Type[3];
-            _typeTable[0] = typeof(global::mIDE.MainPage);
-            _typeTable[1] = typeof(global::Windows.UI.Xaml.Controls.Page);
-            _typeTable[2] = typeof(global::Windows.UI.Xaml.Controls.UserControl);
+            _typeTable = new global::System.Type[5];
+            _typeTable[0] = typeof(global::mIDE.DocumentHelpers.CustomRichEditBox);
+            _typeTable[1] = typeof(global::Windows.UI.Xaml.Controls.RichEditBox);
+            _typeTable[2] = typeof(global::mIDE.MainPage);
+            _typeTable[3] = typeof(global::Windows.UI.Xaml.Controls.Page);
+            _typeTable[4] = typeof(global::Windows.UI.Xaml.Controls.UserControl);
         }
 
         private int LookupTypeIndexByName(string typeName)
@@ -175,7 +179,8 @@ namespace mIDE.mIDE_XamlTypeInfo
             return -1;
         }
 
-        private object Activate_0_MainPage() { return new global::mIDE.MainPage(); }
+        private object Activate_0_CustomRichEditBox() { return new global::mIDE.DocumentHelpers.CustomRichEditBox(); }
+        private object Activate_2_MainPage() { return new global::mIDE.MainPage(); }
 
         private global::Windows.UI.Xaml.Markup.IXamlType CreateXamlType(int typeIndex)
         {
@@ -187,18 +192,29 @@ namespace mIDE.mIDE_XamlTypeInfo
             switch (typeIndex)
             {
 
-            case 0:   //  mIDE.MainPage
-                userType = new global::mIDE.mIDE_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_0_MainPage;
+            case 0:   //  mIDE.DocumentHelpers.CustomRichEditBox
+                userType = new global::mIDE.mIDE_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.RichEditBox"));
+                userType.Activator = Activate_0_CustomRichEditBox;
                 userType.SetIsLocalType();
                 xamlType = userType;
                 break;
 
-            case 1:   //  Windows.UI.Xaml.Controls.Page
+            case 1:   //  Windows.UI.Xaml.Controls.RichEditBox
                 xamlType = new global::mIDE.mIDE_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
 
-            case 2:   //  Windows.UI.Xaml.Controls.UserControl
+            case 2:   //  mIDE.MainPage
+                userType = new global::mIDE.mIDE_XamlTypeInfo.XamlUserType(this, typeName, type, GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
+                userType.Activator = Activate_2_MainPage;
+                userType.SetIsLocalType();
+                xamlType = userType;
+                break;
+
+            case 3:   //  Windows.UI.Xaml.Controls.Page
+                xamlType = new global::mIDE.mIDE_XamlTypeInfo.XamlSystemBaseType(typeName, type);
+                break;
+
+            case 4:   //  Windows.UI.Xaml.Controls.UserControl
                 xamlType = new global::mIDE.mIDE_XamlTypeInfo.XamlSystemBaseType(typeName, type);
                 break;
             }

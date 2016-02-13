@@ -172,7 +172,6 @@ namespace mIDE.InsertClasses
             {
                 foreach (InsertLink link in AutoCompleteLinks)
                 {
-                    var str = insertionName.Remove(insertionName.Length - 1, 1).Remove(0, 1);
                     if (link.LinkString.Equals(insertionName.Remove(insertionName.Length - 1, 1).Remove(0, 1),
                         StringComparison.CurrentCultureIgnoreCase)) links.Add(link);
                 }

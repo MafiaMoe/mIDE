@@ -7,20 +7,11 @@
     <RootType FullName="Windows.UI.Xaml.Controls.Page">
       <RootProperty Name="Resources" />
       <RootProperty Name="Content" />
+      <RootEvent Name="KeyDown" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.RichEditBox">
       <RootProperty Name="SelectionHighlightColor" />
       <RootProperty Name="TextWrapping" />
-      <RootProperty Name="Margin" />
-      <RootProperty Name="Background" />
-      <RootProperty Name="Foreground" />
-      <RootProperty Name="FontFamily" />
-      <RootProperty Name="UseSystemFocusVisuals" />
-      <RootProperty Name="Style" />
-      <RootProperty Name="BorderBrush" />
-      <RootEvent Name="KeyUp" />
-      <RootEvent Name="KeyDown" />
-      <RootEvent Name="SelectionChanged" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.FrameworkElement">
       <RootProperty Name="MinWidth" />
@@ -72,6 +63,7 @@
       <RootProperty Name="Children" />
       <RootProperty Name="Background" />
       <RootProperty Name="ColumnDefinitions" />
+      <RootEvent Name="KeyDown" />
       <RootMethod Name="GetColumnSpan" />
       <RootMethod Name="SetColumnSpan" />
       <RootMethod Name="GetRow" />
@@ -124,6 +116,20 @@
       <RootProperty Name="Background" />
       <RootProperty Name="Orientation" />
       <RootProperty Name="Children" />
+    </RootType>
+    <RootType FullName="mIDE.DocumentHelpers.CustomRichEditBox">
+      <RootProperty Name="IsSpellCheckEnabled" />
+      <RootProperty Name="Margin" />
+      <RootProperty Name="Background" />
+      <RootProperty Name="Foreground" />
+      <RootProperty Name="FontFamily" />
+      <RootProperty Name="UseSystemFocusVisuals" />
+      <RootProperty Name="Style" />
+      <RootProperty Name="BorderBrush" />
+      <RootProperty Name="TextWrapping" />
+      <RootEvent Name="KeyUp" />
+      <RootEvent Name="KeyDown" />
+      <RootEvent Name="SelectionChanged" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.GridView">
       <RootProperty Name="VerticalAlignment" />

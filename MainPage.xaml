@@ -3,9 +3,11 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:mIDE"
+    xmlns:local2="using:mIDE.DocumentHelpers"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d">
+    mc:Ignorable="d" KeyDown="Page_KeyDown">
+    
     <Page.Resources>
         <Style x:Key="RichEditBoxStyle1" TargetType="RichEditBox">
             <Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}"/>
@@ -103,7 +105,7 @@
         </Style>
     </Page.Resources>
 
-    <Grid Background="{ThemeResource AppBarItemPointerOverBackgroundThemeBrush}" >
+    <Grid Background="{ThemeResource AppBarItemPointerOverBackgroundThemeBrush}" KeyDown="Grid_KeyDown" >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="5"/>
@@ -114,10 +116,10 @@
             <Button x:Name="Save" Content="Save" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E" Tapped="Save_Tapped"/>
             <Button x:Name="SaveAll" Content="Sv A" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E" Tapped="SaveAll_Tapped"/>
             <Button x:Name="Open" Content="Open" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E" Margin="0,0,0,3" VerticalAlignment="Bottom" Tapped="Open_Tapped"/>
-            <Button x:Name="Compact" Content="Comp" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E"/>
+            <Button x:Name="Compact" Content="Comp" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E" Tapped="Compact_Tapped"/>
         </StackPanel>
 
-        <RichEditBox x:Name="OpenCode" Margin="10,70,10,10" Background="#FF626368" Foreground="#FFD0D4DC" KeyUp="RichTextBox_KeyUp" FontFamily="Consolas" KeyDown="OpenCode_KeyDown" UseSystemFocusVisuals="True" Style="{StaticResource RichEditBoxStyle1}" BorderBrush="#FF262729" SelectionChanged="OpenCode_SelectionChanged"/>
+        <local2:CustomRichEditBox x:Name="OpenCode" IsSpellCheckEnabled="False" Margin="10,70,10,10" Background="#FF626368" Foreground="#FFD0D4DC" KeyUp="RichTextBox_KeyUp" FontFamily="Consolas" KeyDown="OpenCode_KeyDown" UseSystemFocusVisuals="True" Style="{StaticResource RichEditBoxStyle1}" BorderBrush="#FF262729" SelectionChanged="OpenCode_SelectionChanged" TextWrapping="NoWrap"/>
 
         <StackPanel x:Name="VisibleFilesTab" Height="22" Margin="10,48,10,0" VerticalAlignment="Top" Background="#FF262729" Orientation="Horizontal"/>
 
