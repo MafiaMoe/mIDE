@@ -74,10 +74,33 @@ namespace mIDE.InsertClasses
 
         //add autocomplete
         private char[] stringSeparators = new char[5] { ' ', '(', ')', ',', '\t' };
-        public List<AutoCheckError> CheckAutoCompleteFromFile(string[] fileLines, string filePath)
+        private char[] stringSeparatorsCheckLabels = new char[6] { ' ', '(', ')', ',', '\t', '.' };
+        public List<AutoCheckError> CheckAutoCompleteErrors(string[] fileLines, string filePath)
         {
             var returning = new List<AutoCheckError>();
+            //check for labels not implemented
+            int startError = 0;
             for (int lineNum = 0; lineNum < fileLines.Length; lineNum++)
+            {
+                string[] strs = fileLines[lineNum].Split(stringSeparatorsCheckLabels);
+                for (int i = 0; i < strs.Length; i++)
+                {
+                    if (strs[i].Length > 0 && 
+                        (strs[i][0] == '^' || strs[i][0] == '<') &&
+                        (strs[i][strs[i].Length - 1] == '^' || strs[i][strs[i].Length - 1] == '>'))
+                    {
+                        returning.Add(new AutoCheckError(filePath,
+                            lineNum, startError, startError + strs[i].Length,
+                            "Not set : " + strs[i], ErrorSeverity.none));
+                    }
+                    startError += strs[i].Length + 1;
+                }
+            }
+
+            //check for variable not existing
+
+            //check funcion implementation errors
+            /*for (int lineNum = 0; lineNum < fileLines.Length; lineNum++)
             {
                 string[] strs = fileLines[lineNum].Split(stringSeparators);
 
@@ -92,7 +115,7 @@ namespace mIDE.InsertClasses
                             string variableName = null;
                             //find other parts of the function
                             string[] funcParts = func.succeedingString.Split(stringSeparators);
-                            int si = i;
+                            int si = i + 1;
                             int fi = 0;
                             bool match = true;
                             while (fi < funcParts.Length && match)
@@ -131,12 +154,17 @@ namespace mIDE.InsertClasses
                                     }
                                     si++; fi++;
                                 }
+                                else { match = false; }
                             }
                             //if a match was made, set any variable found to a new autocomplete
+                            if (match)
+                            {
+                                var yay = true;
+                            }
                         }
                     }
                 }
-            }
+            }*/
             return returning;
         }
 
@@ -180,21 +208,24 @@ namespace mIDE.InsertClasses
         }
     }
 
+    public enum ErrorSeverity { none, buildError, runtimeError };
     public class AutoCheckError
     {
         public string FilePath { get; set; }
         public int LineNum { get; set; }
         public int StartIndex { get; set; }
         public int EndIndex { get; set; }
-        public string ErrorText { get; set; }
+        public string Text { get; set; }
+        public ErrorSeverity Severity { get; set; }
 
-        public AutoCheckError(string FilePath, int LineNum, int StartIndex, int EndIndex, string ErrorText)
+        public AutoCheckError(string FilePath, int LineNum, int StartIndex, int EndIndex, string Text, ErrorSeverity Severity)
         {
             this.FilePath = FilePath;
             this.LineNum = LineNum;
             this.StartIndex = StartIndex;
             this.EndIndex = EndIndex;
-            this.ErrorText = ErrorText;
+            this.Text = Text;
+            this.Severity = Severity;
         }
     }
 }

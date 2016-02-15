@@ -100,7 +100,6 @@ namespace mIDE
         private string CaretWord = null;
         private int CaretWordStart = 0, CaretWordEnd = 0;
         private int CaretLocationInWord = 0;
-        private int CaretPositionStart = 0, CaretPositionEnd = 0;
         private bool UpdateCaretText()
         {
             string[] returning = new string[2];
@@ -183,10 +182,16 @@ namespace mIDE
                         foreach (Function cmd in cmds)
                         {
                             string addStr = cmd.name.Remove(0, CaretWord.Length);
-                            autofillListBox.Items.Add(new ListBoxItem { Padding = new Thickness(3), BorderThickness = new Thickness(0.1), Height = 24, Content = cmd.name });
-                            //autofillListBox.Items.Add(cmd.name);
-                            autoCompleteRemove = CaretWord;
-                            autofillListBox.SelectedIndex = 0;
+                            if (autofillListBox.Items.Count > 0 &&
+                                (string)((autofillListBox.Items[autofillListBox.Items.Count - 1]) as ListBoxItem).Content == cmd.name)
+                            { }
+                            else
+                            {
+                                autofillListBox.Items.Add(new ListBoxItem { Padding = new Thickness(3), BorderThickness = new Thickness(0.1), Height = 24, Content = cmd.name });
+                                //autofillListBox.Items.Add(cmd.name);
+                                autoCompleteRemove = CaretWord;
+                                autofillListBox.SelectedIndex = 0;
+                            }
                         }
                     }
                 }
@@ -211,8 +216,7 @@ namespace mIDE
             commandSerchTextBox.Text = "";
             SearchLineForCommands(CaretLineStart, CaretLineEnd);
             SearchForAutoComplete();
-            CaretPositionStart = OpenCode.Document.Selection.StartPosition;
-            CaretPositionEnd = OpenCode.Document.Selection.EndPosition;
+            SearchAllLinesForErrors(); //TODO : set to search caret line for errors when that is available
         }
 
         private char[] stringSeparators = new char[6] { ' ', '(', ')', ',', '.', '\t'};
@@ -238,7 +242,6 @@ namespace mIDE
                     }
                     else
                     {
-                        //localWord...
                         localWord.CharacterFormat.ForegroundColor = Colors.GhostWhite;
                     }
 
@@ -247,6 +250,18 @@ namespace mIDE
                 else { endIndex--; }
             }
             commandSerchTextBox.Text += " : " + CaretLine.Length;
+        }
+
+        private void SearchAllLinesForErrors()
+        {
+            string allLines;
+            OpenCode.Document.GetText(Windows.UI.Text.TextGetOptions.None, out allLines);
+            allLines.Replace('\v', '\r');
+            string[] splitLines = allLines.Split('\r');
+            foreach (AutoCheckError ace in cmdList.CheckAutoCompleteErrors(splitLines, (docShow == null ? null : docShow.FilePath)))
+            {
+                OpenCode.Document.GetRange(ace.StartIndex, ace.EndIndex).CharacterFormat.BackgroundColor = Colors.DarkGoldenrod;
+            }
         }
 
         string autoCompleteRemove = "";
@@ -423,14 +438,8 @@ namespace mIDE
 
         private void Compact_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            string allLines;
-            OpenCode.Document.GetText(Windows.UI.Text.TextGetOptions.None, out allLines);
-            allLines.Replace('\v', '\r');
-            string[] splitLines = allLines.Split('\r');
-            cmdList.CheckAutoCompleteFromFile(splitLines, docShow.FilePath);
-        }
 
-        int lastCaretPositon = 0;
+        }
 
         private void Page_KeyDown(object sender, KeyRoutedEventArgs e)
         {
