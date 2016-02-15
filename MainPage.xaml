@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" KeyDown="Page_KeyDown">
-    
+
     <Page.Resources>
         <Style x:Key="RichEditBoxStyle1" TargetType="RichEditBox">
             <Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}"/>
@@ -119,9 +119,12 @@
             <Button x:Name="Compact" Content="Comp" Width="38" Height="20" FontSize="8" BorderThickness="0.5" BorderBrush="#FF29292E" Tapped="Compact_Tapped"/>
         </StackPanel>
 
-        <local2:CustomRichEditBox x:Name="OpenCode" IsSpellCheckEnabled="False" Margin="10,70,10,10" Background="#FF626368" Foreground="#FFD0D4DC" KeyUp="RichTextBox_KeyUp" FontFamily="Consolas" KeyDown="OpenCode_KeyDown" UseSystemFocusVisuals="True" Style="{StaticResource RichEditBoxStyle1}" BorderBrush="#FF262729" SelectionChanged="OpenCode_SelectionChanged" TextWrapping="NoWrap"/>
+        <RichEditBox x:Name="LineNumberEditBox" Margin="10,70,0,10" Background="#FF404246" BorderBrush="{x:Null}" FontFamily="Consolas" HorizontalAlignment="Left" Width="42" Foreground="#FFC2C9D1" BorderThickness="2" PlaceholderText="  1" IsTapEnabled="False" IsRightTapEnabled="False" IsHoldingEnabled="False" IsDoubleTapEnabled="False" IsHitTestVisible="False" IsSpellCheckEnabled="False"/>
+
+        <local2:CustomRichEditBox x:Name="OpenCode" IsSpellCheckEnabled="False" Margin="52,70,10,10" Background="#FF626368" Foreground="#FFD0D4DC" KeyUp="RichTextBox_KeyUp" FontFamily="Consolas" KeyDown="OpenCode_KeyDown" UseSystemFocusVisuals="True" Style="{StaticResource RichEditBoxStyle1}" BorderBrush="#FF262729" SelectionChanged="OpenCode_SelectionChanged" TextWrapping="NoWrap" Canvas.ZIndex="1"/>
 
         <StackPanel x:Name="VisibleFilesTab" Height="22" Margin="10,48,10,0" VerticalAlignment="Top" Background="#FF262729" Orientation="Horizontal"/>
+
 
         <GridView Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="Black"/>
 

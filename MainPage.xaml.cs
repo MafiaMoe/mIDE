@@ -95,6 +95,19 @@ namespace mIDE
             }
         }
 
+        private void UpdateLineNumbers(int numLines)
+        {
+            string lnText = "  1";
+            for (int i = 2; i < numLines; i++)
+            {
+                if (i < 10) { lnText += "\n  " + i; }
+                else if (i < 100) { lnText += "\n " + i; }
+                else { lnText += "\n" + i; }
+                
+            }
+            LineNumberEditBox.Document.SetText(Windows.UI.Text.TextSetOptions.None, lnText);
+        }
+
         private string CaretLine = null;
         private int CaretLineStart = 0, CaretLineEnd = 0;
         private string CaretWord = null;
@@ -107,6 +120,8 @@ namespace mIDE
             OpenCode.Document.GetText(Windows.UI.Text.TextGetOptions.None, out allLines);
             allLines.Replace('\v', '\r');
             string[] splitLines = allLines.Split('\r');
+
+            UpdateLineNumbers(splitLines.Length);
 
             //find the line that the caret is on
             int lineOffset = 0;
@@ -233,7 +248,7 @@ namespace mIDE
                 if (strings[i] != "")
                 {
                     var localWord = OpenCode.Document.GetRange(endIndex - strings[i].Length, endIndex);
-                    string test = localWord.Text;
+                    localWord.CharacterFormat.BackgroundColor = Colors.Transparent;
 
                     List<Function> coms = cmdList.findExactCommand(strings[i]);
                     if (coms.Count > 0)
@@ -260,7 +275,12 @@ namespace mIDE
             string[] splitLines = allLines.Split('\r');
             foreach (AutoCheckError ace in cmdList.CheckAutoCompleteErrors(splitLines, (docShow == null ? null : docShow.FilePath)))
             {
-                OpenCode.Document.GetRange(ace.StartIndex, ace.EndIndex).CharacterFormat.BackgroundColor = Colors.DarkGoldenrod;
+                Color col = Colors.DeepPink;
+                if (ace.Severity == ErrorSeverity.none) { col = Colors.DarkGoldenrod; }
+                if (ace.Severity == ErrorSeverity.buildError) { col = Colors.DarkOrange; }
+                if (ace.Severity == ErrorSeverity.runtimeError) { col = Colors.Red; }
+                //Colors.DarkGoldenrod
+                OpenCode.Document.GetRange(ace.StartIndex, ace.EndIndex).CharacterFormat.BackgroundColor = col;
             }
         }
 
@@ -280,7 +300,8 @@ namespace mIDE
                 }
                 else
                 {
-                    if (CaretWord == autoCompleteRemove)
+                    if (CaretWord == autoCompleteRemove ||
+                        CaretWord.Remove(CaretWord.Length - 1, 1).Remove(0, 1) == autoCompleteRemove)
                     {
                         //remove word and insert autocomplete
                         string insert = selectedAutofillItem.Content as string;
