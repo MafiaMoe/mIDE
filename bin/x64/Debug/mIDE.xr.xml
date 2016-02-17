@@ -132,6 +132,13 @@
       <RootProperty Name="Orientation" />
       <RootProperty Name="Children" />
     </RootType>
+    <RootType FullName="Windows.UI.Xaml.Shapes.Rectangle">
+      <RootProperty Name="Fill" />
+      <RootProperty Name="HorizontalAlignment" />
+      <RootProperty Name="Margin" />
+      <RootProperty Name="Stroke" />
+      <RootProperty Name="Width" />
+    </RootType>
     <RootType FullName="mIDE.DocumentHelpers.CustomRichEditBox">
       <RootProperty Name="IsSpellCheckEnabled" />
       <RootProperty Name="Margin" />

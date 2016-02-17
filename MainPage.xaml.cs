@@ -35,6 +35,8 @@ namespace mIDE
             this.InitializeComponent();
 
             OpenCode.CustomKeyDown += OpenCode_KeyDown;
+
+            docShow = new ActiveDocument("");
         }
 
         private void ShowDocument(ActiveDocument doc)
@@ -184,25 +186,25 @@ namespace mIDE
                 if (CaretLocationInWord == CaretWord.Length)
                 {
                     //search for exact commands and fill the autocomplete
-                    List<Function> exactCmds = cmdList.findExactCommand(CaretWord);
-                    foreach (Function cmd in exactCmds)
+                    List<InstructionFramework> exactFrame = cmdList.findExactInstruction(CaretWord);
+                    /*foreach (Instruction cmd in exactCmds)
                     {
-                        autofillListBox.Items.Add(new ListBoxItem { Padding = new Thickness(3), BorderThickness = new Thickness(0.1), Height = 24, Content = cmd.succeedingString });
+                        autofillListBox.Items.Add(new ListBoxItem { Padding = new Thickness(3), BorderThickness = new Thickness(0.1), Height = 24, Content = cmd.framework });
                         autofillListBox.SelectedIndex = 0;
-                    }
-                    if (exactCmds.Count == 0)
+                    }*/
+                    if (exactFrame.Count == 0)
                     {
                         //if no exact commands were found, search for partial commands and fill autocomplete
-                        List<Function> cmds = cmdList.findCommandStartingWith(CaretWord);
-                        foreach (Function cmd in cmds)
+                        List<InstructionFramework> insts = cmdList.findCommandStartingWith(CaretWord);
+                        foreach (InstructionFramework inst in insts)
                         {
-                            string addStr = cmd.name.Remove(0, CaretWord.Length);
+                            string addStr = inst.Name.Remove(0, CaretWord.Length);
                             if (autofillListBox.Items.Count > 0 &&
-                                (string)((autofillListBox.Items[autofillListBox.Items.Count - 1]) as ListBoxItem).Content == cmd.name)
+                                (string)((autofillListBox.Items[autofillListBox.Items.Count - 1]) as ListBoxItem).Content == inst.Framework)
                             { }
                             else
                             {
-                                autofillListBox.Items.Add(new ListBoxItem { Padding = new Thickness(3), BorderThickness = new Thickness(0.1), Height = 24, Content = cmd.name });
+                                autofillListBox.Items.Add(new ListBoxItem { Padding = new Thickness(3), BorderThickness = new Thickness(0.1), Height = 24, Content = inst.Framework });
                                 //autofillListBox.Items.Add(cmd.name);
                                 autoCompleteRemove = CaretWord;
                                 autofillListBox.SelectedIndex = 0;
@@ -214,13 +216,13 @@ namespace mIDE
             if (autofillListBox.Items.Count == 0)
             {
                 //if no commands were found, search for links and fill autocomplete
-                List<InsertLink> links = cmdList.findAutoCompleteLinks(CaretWord);
+                /*List<InsertLink> links = cmdList.findAutoCompleteLinks(CaretWord);
                 foreach (InsertLink link in links)
                 {
                     autofillListBox.Items.Add(new ListBoxItem { Padding = new Thickness(3), BorderThickness = new Thickness(0.1), Height = 24, Content = link.LinkAutoComplete });
                     autoCompleteRemove = link.LinkString;
                     autofillListBox.SelectedIndex = 0;
-                }
+                }*/
             }
             //commandSerchTextBox.Text = text3 + " - " + text4 + "  :  " + text3 + text4;
         }
@@ -234,11 +236,12 @@ namespace mIDE
             SearchAllLinesForErrors(); //TODO : set to search caret line for errors when that is available
         }
 
-        private char[] stringSeparators = new char[6] { ' ', '(', ')', ',', '.', '\t'};
+        private char[] stringSeparators = new char[7] { ' ', '(', ')', ',', '.', '\t', ':'};
         private void SearchLineForCommands(int lineStart, int lineEnd)
         {
             //search for commands from back to front
             var textRange = OpenCode.Document.GetRange(lineStart, lineEnd);
+            textRange.CharacterFormat.BackgroundColor = Colors.Transparent;
             string outString;
             textRange.GetText(Windows.UI.Text.TextGetOptions.None, out outString);
             string[] strings = outString.Split(stringSeparators);
@@ -248,12 +251,11 @@ namespace mIDE
                 if (strings[i] != "")
                 {
                     var localWord = OpenCode.Document.GetRange(endIndex - strings[i].Length, endIndex);
-                    localWord.CharacterFormat.BackgroundColor = Colors.Transparent;
 
-                    List<Function> coms = cmdList.findExactCommand(strings[i]);
+                    List<InstructionFramework> coms = cmdList.findExactInstruction(strings[i]);
                     if (coms.Count > 0)
                     {
-                        localWord.CharacterFormat.ForegroundColor = coms[0].contextColor;
+                        localWord.CharacterFormat.ForegroundColor = coms[0].ContextColor;
                     }
                     else
                     {
@@ -269,18 +271,25 @@ namespace mIDE
 
         private void SearchAllLinesForErrors()
         {
-            string allLines;
-            OpenCode.Document.GetText(Windows.UI.Text.TextGetOptions.None, out allLines);
-            allLines.Replace('\v', '\r');
-            string[] splitLines = allLines.Split('\r');
-            foreach (AutoCheckError ace in cmdList.CheckAutoCompleteErrors(splitLines, (docShow == null ? null : docShow.FilePath)))
+            //string allLines;
+            //OpenCode.Document.GetText(Windows.UI.Text.TextGetOptions.None, out allLines);
+            //allLines.Replace('\v', '\r');
+            //string[] splitLines = allLines.Split('\r');
+            if (docShow != null)
             {
-                Color col = Colors.DeepPink;
-                if (ace.Severity == ErrorSeverity.none) { col = Colors.DarkGoldenrod; }
-                if (ace.Severity == ErrorSeverity.buildError) { col = Colors.DarkOrange; }
-                if (ace.Severity == ErrorSeverity.runtimeError) { col = Colors.Red; }
-                //Colors.DarkGoldenrod
-                OpenCode.Document.GetRange(ace.StartIndex, ace.EndIndex).CharacterFormat.BackgroundColor = col;
+                string allLines;
+                OpenCode.Document.GetText(Windows.UI.Text.TextGetOptions.None, out allLines);
+                docShow.Text = allLines;
+
+                foreach (AutoCheckError ace in cmdList.CheckAutoCompleteErrors(docShow))
+                {
+                    Color col = Colors.DeepPink;
+                    if (ace.Severity == ErrorSeverity.none) { col = Colors.DarkGoldenrod; }
+                    if (ace.Severity == ErrorSeverity.buildError) { col = Colors.DarkOrange; }
+                    if (ace.Severity == ErrorSeverity.runtimeError) { col = Colors.Red; }
+                    //Colors.DarkGoldenrod
+                    OpenCode.Document.GetRange(ace.StartIndex, ace.EndIndex).CharacterFormat.BackgroundColor = col;
+                }
             }
         }
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
+using mIDE.InsertClasses;
 
 namespace mIDE.DocumentHelpers
 {
@@ -96,7 +97,83 @@ namespace mIDE.DocumentHelpers
 
         public async void Load(Windows.Storage.StorageFile file)
         {
-            
+
+        }
+
+        public List<CodePiece> FindCommmentIndexes()
+        {
+            var returning = new List<CodePiece>();
+
+            int curIndex = 0;
+            while (document.Remove(0, curIndex).Contains("//"))
+            {
+                int comStart = document.IndexOf("//", curIndex);
+                int comEnd = document.IndexOf("\n", comStart);
+                returning.Add(new CodePiece(document.Substring(comStart, comEnd - comStart), comStart, comEnd));
+            }
+
+            return returning;
+        }
+
+        public string ClearComments()
+        {
+            var returning = document;
+
+            //remove comments from back to front
+            var comPieces = FindCommmentIndexes();
+            for (int i = comPieces.Count - 1; i >= 0; i--)
+            {
+                returning = returning.Remove(comPieces[i].StartLocation, comPieces[i].EndLocation - comPieces[i].StartLocation);
+            }
+
+            return returning;
+        }
+
+        string[] InstructionEnds = new string[3] { ". ", ".\t", ".\n" };
+        public List<CodePiece> GetInstructionStrings()
+        {
+            var returning = new List<CodePiece>();
+
+            var comments = FindCommmentIndexes();
+
+            string[] texts = document.Split(InstructionEnds, StringSplitOptions.None);
+
+            int startIndex = 0;
+            for (int i = 0; i < texts.Length; i++)
+            {
+                CodePiece ins = new CodePiece(texts[i],
+                    startIndex,
+                    startIndex + texts[i].Length);
+
+                returning.Add(ins);
+
+                startIndex += texts[i].Length + 2;
+            }
+
+            return returning;
+        }
+    }
+
+    public class CodePiece
+    {
+        public string Text;
+        public int StartLocation, EndLocation;
+        public InstructionFramework Framework;
+
+        public CodePiece(string Text, int StartLocation, int EndLocation)
+        {
+            this.Text = Text;
+            this.StartLocation = StartLocation;
+            this.EndLocation = EndLocation;
+            Framework = null;
+        }
+
+        public CodePiece(string Text, int StartLocation, int EndLocation, InstructionFramework Framework)
+        {
+            this.Text = Text;
+            this.StartLocation = StartLocation;
+            this.EndLocation = EndLocation;
+            this.Framework = Framework;
         }
     }
 }

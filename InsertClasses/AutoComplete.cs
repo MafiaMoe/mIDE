@@ -7,22 +7,24 @@ using Windows.UI;
 
 namespace mIDE.InsertClasses
 {
-    class Function
+    public class InstructionFramework
     {
-        public string name;
-        public string succeedingString;
+        public string Name { get; }
+        public string Framework { get; }
+        public string Result { get; }
         //public List<SucceedingValue> succeedingValues;
-        public Color contextColor;
+        public Color ContextColor { get; }
 
-        public Function(string Name, string SucceedingString, Color ContextColor)
+        public InstructionFramework(string Name, string Framework, string Result, Color ContextColor)
         {
-            this.name = Name;
-            this.succeedingString = SucceedingString;
-            this.contextColor = ContextColor;
+            this.Name = Name;
+            this.Framework = Framework;
+            this.Result = Result;
+            this.ContextColor = ContextColor;
         }
     }
 
-    enum SucceedingType { String, Function, Property, AT, TO, Variable, End };
+    /*enum SucceedingType { String, Function, Property, AT, TO, Variable, End };
 
     struct SucceedingValue
     {
@@ -34,5 +36,5 @@ namespace mIDE.InsertClasses
             this.type = Type;
             this.value = Value;
         }
-    }
+    }*/
 }
