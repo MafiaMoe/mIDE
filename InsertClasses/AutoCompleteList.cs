@@ -10,9 +10,9 @@ namespace mIDE.InsertClasses
 {
     class AutoCompleteList
     {
-        private List<InstructionFramework> Instructions;
+        public List<InstructionFramework> Instructions;
         //private List<InsertLink> AutoCompleteLinks;
-        private List<VariableTree> VariableTreeNodes;
+        public List<VariableTree> VariableTreeNodes;
 
         public AutoCompleteList()
         {
@@ -28,18 +28,19 @@ namespace mIDE.InsertClasses
         /// </summary>
         private void LoadDefaults()
         {
+            //all instructions specified should have the MINIMAL required spacing
             if (Instructions == null) throw new Exception("Commands list not initialized");
             //Instructions.Add(new InstructionFramework("PRINT", "PRINT <GET>.", Colors.Blue));
             Instructions.Add(new InstructionFramework("PRINT", "PRINT <GET> AT(<INT.GET>,<INT.GET>).", null, Colors.Blue));
-            //Instructions.Add(new InstructionFramework("AT", "AT", Colors.Blue));
-            //Instructions.Add(new InstructionFramework("SET", "SET <OBJA.SET> TO <OBJA.GET>.", Colors.Plum));
-            //Instructions.Add(new InstructionFramework("LOCK", "LOCK <OBJA.SET> TO <OBJA.GET>.", Colors.Red));
-            //Instructions.Add(new InstructionFramework("TO", "TO", Colors.Teal));
-            //Instructions.Add(new InstructionFramework("LIST", "LIST <LIST.GET> IN <LIST.SET>.", Colors.Orange));
-            //Instructions.Add(new InstructionFramework("IN", "IN", Colors.DarkOrange));
-            //Functions.Add(new Instruction("PIDLOOP", "(<NUM>, <NUM>, <NUM>, <NUM>, <NUM>)", Colors.Green));
-            //Functions.Add(new Instruction("PIDLOOP", "(<NUM>, <NUM>, <NUM>)", Colors.Green));
-            //Functions.Add(new Instruction("PIDLOOP", "()", Colors.Green));
+            Instructions.Add(new InstructionFramework("AT", "AT", null, Colors.Blue));
+            Instructions.Add(new InstructionFramework("SET", "SET <OBJA.SET> TO <OBJA.GET>.", null, Colors.Plum));
+            Instructions.Add(new InstructionFramework("LOCK", "LOCK <OBJA.SET> TO <OBJA.GET>.", null, Colors.Red));
+            Instructions.Add(new InstructionFramework("TO", "TO", null, Colors.Teal));
+            Instructions.Add(new InstructionFramework("LIST", "LIST <LIST.GET> IN <LIST.SET>.", null, Colors.Orange));
+            Instructions.Add(new InstructionFramework("IN", "IN", null, Colors.DarkOrange));
+            Instructions.Add(new InstructionFramework("PIDLOOP", "PIDLOOP(<NUM>, <NUM>, <NUM>, <NUM>, <NUM>)", "<PIDLOOP.GET>", Colors.Green));
+            Instructions.Add(new InstructionFramework("PIDLOOP", "PIDLOOP(<NUM>, <NUM>, <NUM>)", "<PIDLOOP.GET>", Colors.Green));
+            Instructions.Add(new InstructionFramework("PIDLOOP", "PIDLOOP()", "<PIDLOOP.GET>", Colors.Green));
 
             Instructions.Add(new InstructionFramework("+", "<NUM.GET>+<NUM.GET>", "<NUM.GET>", Colors.Teal));
             Instructions.Add(new InstructionFramework("+", "<STR.GET>+<NUM.GET>", "<STR.GET>", Colors.Teal));
@@ -140,117 +141,166 @@ namespace mIDE.InsertClasses
             }*/
         }
 
-        //find best framework match
-        private char[] frameworkSeperators = new char[3] { ' ', '\r', '\t' };
-        public InstructionFramework FindMatchingFramework(string instructionText)
+        private bool ResultCheck(string expected, string check)
         {
-            if (instructionText == "") return null;
+            if (expected == null && check == null) return true;
+            if (expected == null || check == null) return false;
+            if (expected[0] != '<' || expected[expected.Length - 1] != '>') throw new Exception("Expected issue");
+            if (check[0] != '<' || check[check.Length - 1] != '>') throw new Exception("Check issue");
 
-            int textIndexStart = 0;
-            //remove white space and comments
-            while (instructionText[textIndexStart] == ' ')
+            string[] reqs = expected.Remove(0, 1).Remove(expected.Length - 2, 1).Split('.');
+            string[] cprops = check.Remove(0, 1).Remove(check.Length - 2, 1).Split('.');
+
+            foreach (string req in reqs)
             {
-                textIndexStart++;
-                //if at end of line, return null
-                if (textIndexStart == instructionText.Length - 2) { return null; }
-                //if we have come accross a comment
-                if (instructionText.Substring(textIndexStart, 2) == "//")
+                bool match = false;
+                for (int i = 0; i < cprops.Length; i++)
                 {
-                    //if there is and end to the comment
-                    if (instructionText.Substring(textIndexStart).Contains('\n'))
+                    if (cprops[i] == req)
                     {
-                        //move to end of comment
-                        textIndexStart = instructionText.IndexOf('\n', textIndexStart);
+                        match = true;
                     }
-                    else { return null; }
+                }
+
+                if (!match)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private int FindMatchingString(string str, string[] array)
+        {
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (str == array[i]) return i;
+            }
+
+            return -1;
+        }
+
+        private List<string> BreakDownLine(string str)
+        {
+            List<string> allTextParts = new List<string>();
+
+            string[] textParts = str.Split(frameworkSeparators);
+            char[] textSeperators = new char[textParts.Length - 1];
+            int offset = -1;
+            for (int i = 0; i < textParts.Length - 1; i++)
+            {
+                offset += textParts[i].Length + 1;
+                textSeperators[i] = str[offset];
+
+                if (textParts[i] != "") { allTextParts.Add(textParts[i]); }
+                allTextParts.Add(str[offset].ToString());
+            }
+            allTextParts.Add(textParts[textParts.Length - 1]);
+
+            return allTextParts;
+        }
+
+        //find best framework match
+        private char[] frameworkSeparators = new char[10] { ' ', '\r', '\t', '(', ')', ',', '+', '-', '*', '/' };
+        public CodePiece FindMatchingFramework(string instructionText, string expectedResult)
+        {
+            CodePiece returning = new CodePiece(instructionText, 0, instructionText.Length);
+
+            if (instructionText == "" || instructionText == "\r" || instructionText == "/t") return null;
+            InstructionFramework match = null;
+
+            //gather up all the text part into a single list, including separators
+            List<string> allTextParts = BreakDownLine(instructionText);
+
+            for (int ic = 0; ic < Instructions.Count; ic++)
+            {
+                //if the result we are looking for matches the instruction result
+                if (ResultCheck(expectedResult, Instructions[ic].Result))
+                {
+                    //gather up all the instruction parts into a single list, including separators
+                    List<string> allInstParts = BreakDownLine(Instructions[ic].Framework);
+
+                    //check to make sure all parts are accounted for
+                    allTextParts = allInstParts;
                 }
             }
 
-            //framework ex :    "PRINT <GET> AT(<INT.SET>, <INT.SET>)."
-            //line example :    "PRINT "hello " + strVar AT (0, <INT.SET>)"
-
-            //check each framework
-            foreach (InstructionFramework insFram in Instructions)
+            /*int curTextPartInspection = -1;
+            for (int ic = 0; ic < Instructions.Count; ic++)
             {
-                int textIndex = textIndexStart;
-                int frameIndex = 0;
-                bool match = true;
-                while (match && frameIndex < insFram.Framework.Length && textIndex < instructionText.Length)
+                if (ResultCheck(expectedResult, Instructions[ic].Result))
                 {
-                    //if the frame is a variable, skip to end of variable
-                    if (insFram.Framework[frameIndex] == '<')
+                    bool findingMatch = true;
+                    string[] instParts = Instructions[ic].Framework.Split(frameworkSeparators);
+                    char[] instSeperators = new char[instParts.Length - 1];
+                    offset = -1;
+                    for (int i = 0; i < instParts.Length - 1; i++)
                     {
-                        frameIndex = insFram.Framework.IndexOf(' ', frameIndex) + 1;
-                        //find end of variable for text
-                        textIndex++;
-                        bool repeat = true;
-                        while (repeat)
+                        offset += instParts[i].Length + 1;
+                        instSeperators[i] = Instructions[ic].Framework[offset];
+                    }
+
+                    //collect any areas in the text that need to be saved as child code pieces
+                    List<CodePiece> childCodePieces = new List<CodePiece>();
+                    bool codePieceOpen = false;
+
+                    for (int iff = 0; iff < instParts.Length && findingMatch; iff++)
+                    {
+                        //check if the text matches the instruction
+                        string instPart = instParts[iff];
+
+                        //if instruction part is text
+                        if (instPart[0] != '<' && instPart[instPart.Length - 1] != '>')
                         {
-                            textIndex = instructionText.IndexOf(' ', textIndex) + 1;
-                            repeat = (instructionText[textIndex] == ' ' ||
-                                instructionText[textIndex] == '+' ||
-                                instructionText[textIndex] == '-' ||
-                                instructionText[textIndex] == '*' ||
-                                instructionText[textIndex] == '/');
+                            int textPartInspection = FindMatchingString(instPart, textParts);
+                            
+                            //if the instruction exists in the correct order as a textPart, move on
+                            if (textPartInspection > curTextPartInspection)
+                            {
+                                //check separators
+                                //spacable separators
+
+                                //non-spacable separators
+
+                                curTextPartInspection = textPartInspection;
+                            }
+                            //else stop searching for a match
+                            else
+                            {
+                                findingMatch = false;
+                            }
+                        }
+                        //if instruction is part of a variableTree
+                        else if (instPart[0] == '<' && (instPart[instPart.Length - 1] == '>' || instPart.Substring(instPart.Length - 2, 2) == ">."))
+                        {
+                            //create a new code part
+                            childCodePieces.Add(new CodePiece("", -1, -1));
+
+                            int childStart = 0;
+                            for (int i = 0; i < curTextPartInspection; i++)
+                            {
+                                childStart += textParts[i].Length + 1;
+                            }
+                            childCodePieces[childCodePieces.Count - 1].StartLocation = childStart;
+
+                            codePieceOpen = true;
+                        }
+                        else
+                        {
+                            throw new Exception("instruction is not correctly configured");
                         }
                     }
-                    //if frame enters bracket, make sure text does
-                    else if (insFram.Framework[frameIndex] == '(')
+
+                    if (findingMatch)
                     {
-                        while (instructionText[textIndex] == ' ') textIndex++;
-                        if (instructionText[textIndex] != '(') match = false;
-                        frameIndex++;
-                        textIndex++;
-                    }
-                    //if frame exits bracket, make sure text does
-                    else if (insFram.Framework[frameIndex] == ')')
-                    {
-                        while (instructionText[textIndex] == ' ') textIndex++;
-                        if (instructionText[textIndex] != ')') match = false;
-                        frameIndex++;
-                        textIndex++;
-                    }
-                    //if the frame is on a space, advance frame search by one
-                    else if (insFram.Framework[frameIndex] == ' ')
-                    {
-                        frameIndex++;
-                    }
-                    //if the text in on a space, advance text search by one
-                    else if (instructionText[textIndex] == ' ')
-                    {
-                        textIndex++;
-                    }
-                    //if the two are equal, move on
-                    else if (insFram.Framework.Substring(frameIndex, 1).Equals(instructionText.Substring(textIndex, 1), StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        textIndex++;
-                        frameIndex++;
-                    }
-                    else
-                    {
-                        match = false;
+                        //!!!! Found a match !!!!
+                        match = Instructions[ic];
                     }
                 }
             }
 
-            /*string[] frameworkParts = instructionText.Split(frameworkSeperators);
-            for (int i = 0; i < frameworkParts.Length; i++)
-            {
-                if (frameworkParts[i] != "")
-                {
-                    foreach (InstructionFramework insFram in Instructions)
-                    {
-                        int textIndex = textIndexStart;
-                        int frameIndex = 0;
-                        if (frameworkParts[i] == insFram.name)
-                        {
+            returning.Framework = match;*/
 
-                        }
-                    }
-                }
-            }*/
-
-            return null;
+            return returning;
         }
 
         //add autocomplete
@@ -265,24 +315,34 @@ namespace mIDE.InsertClasses
             //check for framework
             for (int instNum = 0; instNum < instructions.Count; instNum++)
             {
-                InstructionFramework iFrame = FindMatchingFramework(instructions[instNum].Text);
-                instructions[instNum].Framework = iFrame;
+                CodePiece code = FindMatchingFramework(instructions[instNum].Text, null);
+                instructions[instNum].Framework = (code == null ? null : code.Framework);
             }
 
             //check for labels not implemented
             int startError = 0;
             for (int instNum = 0; instNum < instructions.Count; instNum++)
             {
-                string[] strs = instructions[instNum].Text.Split(stringSeparatorsCheckLabels);
+                string text = instructions[instNum].Text;
+                if (text != "" && text[text.Length - 1] == '\r') text = text.Remove(text.Length - 1, 1);
+                if (text != "" && text[text.Length - 1] == '\t') text = text.Remove(text.Length - 1, 1);
+                string[] strs = text.Split(stringSeparatorsCheckLabels);
                 for (int i = 0; i < strs.Length; i++)
                 {
-                    if (strs[i].Length > 0 && 
-                        (strs[i][0] == '^' || strs[i][0] == '<') &&
-                        (strs[i][strs[i].Length - 1] == '^' || strs[i][strs[i].Length - 1] == '>'))
+                    if (strs[i].Length > 0 && (strs[i][0] == '<'))
                     {
-                        returning.Add(new AutoCheckError(doc.FilePath,
-                            instNum, startError, startError + strs[i].Length,
-                            "Not set : " + strs[i], ErrorSeverity.none));
+                        if (strs[i][strs[i].Length - 1] == '>')
+                        {
+                            returning.Add(new AutoCheckError(doc.FilePath,
+                                instNum, startError, startError + strs[i].Length,
+                                "Not set : " + strs[i], ErrorSeverity.none));
+                        }
+                        if (strs[i].Substring(strs[i].Length - 2, 2) == ">.")
+                        {
+                            returning.Add(new AutoCheckError(doc.FilePath,
+                                instNum, startError, startError + strs[i].Length - 1,
+                                "Not set : " + strs[i], ErrorSeverity.none));
+                        }
                     }
                     startError += strs[i].Length + 1;
                 }

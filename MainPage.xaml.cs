@@ -37,6 +37,14 @@ namespace mIDE
             OpenCode.CustomKeyDown += OpenCode_KeyDown;
 
             docShow = new ActiveDocument("");
+
+            //test
+            //docShow.Text = "variable + \"string\"";
+            docShow.Text = "PRINT \"hello\" AT (0, 1).";
+            cmdList.Instructions.Add(new InstructionFramework("variable", "variable", "<INT.GET>", Colors.Linen));
+            //ShowDocument(docShow);
+            //CodePiece cp = cmdList.FindMatchingFramework(docShow.Text, "<STR.GET>");
+            CodePiece cp = cmdList.FindMatchingFramework(docShow.Text, null);
         }
 
         private void ShowDocument(ActiveDocument doc)

@@ -159,6 +159,7 @@ namespace mIDE.DocumentHelpers
         public string Text;
         public int StartLocation, EndLocation;
         public InstructionFramework Framework;
+        List<CodePiece> childPieces;
 
         public CodePiece(string Text, int StartLocation, int EndLocation)
         {
@@ -166,6 +167,7 @@ namespace mIDE.DocumentHelpers
             this.StartLocation = StartLocation;
             this.EndLocation = EndLocation;
             Framework = null;
+            childPieces = new List<CodePiece>();
         }
 
         public CodePiece(string Text, int StartLocation, int EndLocation, InstructionFramework Framework)
@@ -174,6 +176,7 @@ namespace mIDE.DocumentHelpers
             this.StartLocation = StartLocation;
             this.EndLocation = EndLocation;
             this.Framework = Framework;
+            childPieces = new List<CodePiece>();
         }
     }
 }
