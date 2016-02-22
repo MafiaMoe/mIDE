@@ -235,7 +235,7 @@ namespace mIDE.InsertClasses
                             {
                                 txtMatch = true;
                                 //close the open code piece
-                                if (childCodePieceResult != null)
+                                if (childCodePieceResult != null && allTextParts[curTextPart] != " ")
                                 {
                                     int childEnd = -1;
                                     for (int i = 0; i <= curTextPart; i++)
@@ -267,6 +267,10 @@ namespace mIDE.InsertClasses
 
                                 childCodePieces.Add(new CodePiece("", childStart, 0));
                                 childCodePieceResult = instPart;
+
+                            }
+                            else if (allTextParts[curTextPart] == " " || allTextParts[curTextPart] == "")
+                            {
 
                             }
                             curTextPart++;
@@ -394,7 +398,7 @@ namespace mIDE.InsertClasses
                                 instNum, startError, startError + strs[i].Length,
                                 "Not set : " + strs[i], ErrorSeverity.none));
                         }
-                        if (strs[i].Substring(strs[i].Length - 2, 2) == ">.")
+                        if (strs[i].Length > 1 && strs[i].Substring(strs[i].Length - 2, 2) == ">.")
                         {
                             returning.Add(new AutoCheckError(doc.FilePath,
                                 instNum, startError, startError + strs[i].Length - 1,
