@@ -32,12 +32,12 @@ namespace mIDE.InsertClasses
             if (Instructions == null) throw new Exception("Commands list not initialized");
             //Instructions.Add(new InstructionFramework("PRINT", "PRINT <GET>.", Colors.Blue));
             Instructions.Add(new InstructionFramework("PRINT", "PRINT <GET> AT(<INT.GET>,<INT.GET>).", null, Colors.Blue));
-            Instructions.Add(new InstructionFramework("AT", "AT", null, Colors.Blue));
+            Instructions.Add(new InstructionFramework("AT", "AT", "<AT>", Colors.Blue));
             Instructions.Add(new InstructionFramework("SET", "SET <OBJA.SET> TO <OBJA.GET>.", null, Colors.Plum));
             Instructions.Add(new InstructionFramework("LOCK", "LOCK <OBJA.SET> TO <OBJA.GET>.", null, Colors.Red));
-            Instructions.Add(new InstructionFramework("TO", "TO", null, Colors.Teal));
+            Instructions.Add(new InstructionFramework("TO", "TO", "<TO>", Colors.Teal));
             Instructions.Add(new InstructionFramework("LIST", "LIST <LIST.GET> IN <LIST.SET>.", null, Colors.Orange));
-            Instructions.Add(new InstructionFramework("IN", "IN", null, Colors.DarkOrange));
+            Instructions.Add(new InstructionFramework("IN", "IN", "<IN>", Colors.DarkOrange));
             Instructions.Add(new InstructionFramework("PIDLOOP", "PIDLOOP(<NUM>, <NUM>, <NUM>, <NUM>, <NUM>)", "<PIDLOOP.GET>", Colors.Green));
             Instructions.Add(new InstructionFramework("PIDLOOP", "PIDLOOP(<NUM>, <NUM>, <NUM>)", "<PIDLOOP.GET>", Colors.Green));
             Instructions.Add(new InstructionFramework("PIDLOOP", "PIDLOOP()", "<PIDLOOP.GET>", Colors.Green));
@@ -205,13 +205,13 @@ namespace mIDE.InsertClasses
         {
             CodePiece returning = new CodePiece(instructionText, 0, instructionText.Length);
 
-            if (instructionText == "" || instructionText == "\r" || instructionText == "/t") return null;
-            InstructionFramework match = null;
+            if (instructionText == null || instructionText == "" || instructionText == "\r" || instructionText == "/t") return null;
+            //InstructionFramework match = null;
 
-            //gather up all the text part into a single list, including separators
+            //gather up all the text parts into a single list, including separators
             List<string> allTextParts = BreakDownLine(instructionText);
 
-            for (int ic = 0; ic < Instructions.Count; ic++)
+            for (int ic = 0; ic < Instructions.Count && returning.Framework == null; ic++)
             {
                 //if the result we are looking for matches the instruction result
                 if (ResultCheck(expectedResult, Instructions[ic].Result))
@@ -219,8 +219,65 @@ namespace mIDE.InsertClasses
                     //gather up all the instruction parts into a single list, including separators
                     List<string> allInstParts = BreakDownLine(Instructions[ic].Framework);
 
+                    //collect any areas in the text that need to be saved as child code pieces
+                    List<CodePiece> childCodePieces = new List<CodePiece>();
+                    string childCodePieceResult = null;
+
                     //check to make sure all parts are accounted for
-                    allTextParts = allInstParts;
+                    int curTextPart = 0;
+                    bool txtMatch = false;
+                    foreach (string instPart in allInstParts)
+                    {
+                        txtMatch = false;
+                        while (curTextPart < allTextParts.Count && !txtMatch)
+                        {
+                            if (allTextParts[curTextPart].Equals(instPart, StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                txtMatch = true;
+                                //close the open code piece
+                                if (childCodePieceResult != null)
+                                {
+                                    int childEnd = -1;
+                                    for (int i = 0; i <= curTextPart; i++)
+                                    {
+                                        childEnd += allTextParts[i].Length;
+                                    }
+
+                                    CodePiece cp = childCodePieces.Last<CodePiece>();
+
+                                    cp.EndLocation = childEnd;
+                                    if (childEnd >= 0)
+                                    {
+                                        cp.Text = instructionText.Substring(cp.StartLocation, cp.EndLocation - cp.StartLocation);
+                                    }
+
+                                    cp.Framework = FindMatchingFramework(cp.Text, childCodePieceResult).Framework;
+                                    childCodePieceResult = null;
+                                }
+                            }
+                            else if (instPart[0] == '<' && instPart[instPart.Length - 1] == '>')
+                            {
+                                txtMatch = true;
+
+                                int childStart = 0;
+                                for (int i = 0; i < curTextPart; i++)
+                                {
+                                    childStart += allTextParts[i].Length;
+                                }
+
+                                childCodePieces.Add(new CodePiece("", childStart, 0));
+                                childCodePieceResult = instPart;
+
+                            }
+                            curTextPart++;
+                        }
+                    }
+
+                    if (txtMatch) //found a match!!!1!11!!
+                    {
+                        returning.Framework = Instructions[ic];
+                        returning.ChildPieces = childCodePieces;
+                    }
                 }
             }
 

@@ -45,6 +45,7 @@ namespace mIDE
             //ShowDocument(docShow);
             //CodePiece cp = cmdList.FindMatchingFramework(docShow.Text, "<STR.GET>");
             CodePiece cp = cmdList.FindMatchingFramework(docShow.Text, null);
+            cp.Framework = cp.Framework;
         }
 
         private void ShowDocument(ActiveDocument doc)

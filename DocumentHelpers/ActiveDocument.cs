@@ -129,7 +129,7 @@ namespace mIDE.DocumentHelpers
             return returning;
         }
 
-        string[] InstructionEnds = new string[3] { ". ", ".\t", ".\n" };
+        string[] InstructionEnds = new string[4] { ". ", ".\t", ".\n", ".\r" };
         public List<CodePiece> GetInstructionStrings()
         {
             var returning = new List<CodePiece>();
@@ -141,6 +141,8 @@ namespace mIDE.DocumentHelpers
             int startIndex = 0;
             for (int i = 0; i < texts.Length; i++)
             {
+                texts[i] += '.';
+
                 CodePiece ins = new CodePiece(texts[i],
                     startIndex,
                     startIndex + texts[i].Length);
@@ -159,7 +161,7 @@ namespace mIDE.DocumentHelpers
         public string Text;
         public int StartLocation, EndLocation;
         public InstructionFramework Framework;
-        List<CodePiece> childPieces;
+        public List<CodePiece> ChildPieces;
 
         public CodePiece(string Text, int StartLocation, int EndLocation)
         {
@@ -167,7 +169,7 @@ namespace mIDE.DocumentHelpers
             this.StartLocation = StartLocation;
             this.EndLocation = EndLocation;
             Framework = null;
-            childPieces = new List<CodePiece>();
+            ChildPieces = new List<CodePiece>();
         }
 
         public CodePiece(string Text, int StartLocation, int EndLocation, InstructionFramework Framework)
@@ -176,7 +178,7 @@ namespace mIDE.DocumentHelpers
             this.StartLocation = StartLocation;
             this.EndLocation = EndLocation;
             this.Framework = Framework;
-            childPieces = new List<CodePiece>();
+            ChildPieces = new List<CodePiece>();
         }
     }
 }
