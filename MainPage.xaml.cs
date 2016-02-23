@@ -40,7 +40,7 @@ namespace mIDE
 
             //test
             //docShow.Text = "variable + \"string\"";
-            docShow.Text = "PRINT \"hello\" AT (0, 1).";
+            docShow.Text = "PRINT \"hello\" + \" world\" AT(0, 1).";
             cmdList.Instructions.Add(new InstructionFramework("variable", "variable", "<INT.GET>", Colors.Linen));
             //ShowDocument(docShow);
             //CodePiece cp = cmdList.FindMatchingFramework(docShow.Text, "<STR.GET>");

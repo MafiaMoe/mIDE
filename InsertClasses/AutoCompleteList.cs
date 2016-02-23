@@ -225,56 +225,208 @@ namespace mIDE.InsertClasses
 
                     //check to make sure all parts are accounted for
                     int curTextPart = 0;
-                    bool txtMatch = false;
-                    foreach (string instPart in allInstParts)
+                    int lastTextPartAccountedFor = 0;
+                    bool txtMatch = true; //true until proven wrong
+                    for (int curInstPart = 0; curInstPart < allInstParts.Count && txtMatch; curInstPart++)
                     {
-                        txtMatch = false;
-                        while (curTextPart < allTextParts.Count && !txtMatch)
+                        string curInst = allInstParts[curInstPart];
+                        string lastInst = (curInstPart > 0 ? allInstParts[curInstPart - 1] : "");
+                        string nextInst = (curInstPart < allInstParts.Count - 1 ? allInstParts[curInstPart + 1] : "");
+
+                        //if the instruction part is a variable, start a new code part
+                        if (curInst[0] == '<' && curInst[curInst.Length - 1] == '>')
                         {
-                            if (allTextParts[curTextPart].Equals(instPart, StringComparison.CurrentCultureIgnoreCase))
+                            //find the start of the instruction in the text
+                            int childStart = 0;
+                            for (int i = 0; i < curTextPart; i++)
                             {
-                                txtMatch = true;
-                                //close the open code piece
-                                if (childCodePieceResult != null && allTextParts[curTextPart] != " ")
-                                {
-                                    int childEnd = -1;
-                                    for (int i = 0; i <= curTextPart; i++)
-                                    {
-                                        childEnd += allTextParts[i].Length;
-                                    }
-
-                                    CodePiece cp = childCodePieces.Last<CodePiece>();
-
-                                    cp.EndLocation = childEnd;
-                                    if (childEnd >= 0)
-                                    {
-                                        cp.Text = instructionText.Substring(cp.StartLocation, cp.EndLocation - cp.StartLocation);
-                                    }
-
-                                    cp.Framework = FindMatchingFramework(cp.Text, childCodePieceResult).Framework;
-                                    childCodePieceResult = null;
-                                }
+                                childStart += allTextParts[i].Length;
                             }
-                            else if (instPart[0] == '<' && instPart[instPart.Length - 1] == '>')
-                            {
-                                txtMatch = true;
+                            if (nextInst == " ") childStart++;
 
-                                int childStart = 0;
-                                for (int i = 0; i < curTextPart; i++)
-                                {
-                                    childStart += allTextParts[i].Length;
-                                }
-
-                                childCodePieces.Add(new CodePiece("", childStart, 0));
-                                childCodePieceResult = instPart;
-
-                            }
-                            else if (allTextParts[curTextPart] == " " || allTextParts[curTextPart] == "")
-                            {
-
-                            }
-                            curTextPart++;
+                            childCodePieces.Add(new CodePiece("", childStart, 0));
+                            childCodePieceResult = allInstParts[curInstPart];
                         }
+
+                        //if the instruction part is not blank or a space
+                        else if (curInst != " " && curInst != "")
+                        {
+                            //find text part that coincides with the instruction part
+                            bool instMatch = false;
+                            while (curTextPart < allTextParts.Count && !instMatch)
+                            {
+                                //check if text matches instruction
+                                string curText = allTextParts[curTextPart];
+                                if (curInst.Equals(curText, StringComparison.CurrentCulture))
+                                {
+                                    //check if text before instuction part is correct
+                                    bool lastMatch = false;
+                                    if (curInstPart == 0) lastMatch = true; //if the instruction part is the first, match
+                                    else
+                                    {
+                                        //if the last instruction part was a space, make sure the text is as well
+                                        if (lastInst == " " && allTextParts[curTextPart - 1] == " ")
+                                        {
+                                            lastMatch = true;
+                                        }
+                                        //else if the last instruction was a variable
+                                        else if (lastInst[0] == '<' && lastInst[lastInst.Length - 1] == '>')
+                                        {
+                                            lastMatch = true;
+                                        }
+                                        //else find the last text part that was not a space and check
+                                        else
+                                        {
+                                            //find the last text part that was not a space
+                                            string lastText = " ";
+                                            for (int i = curTextPart - 1; i > 0 && lastText == " "; i--)
+                                            {
+                                                lastText = allTextParts[i];
+                                            }
+                                            //check if the last text part matches the last instruction part
+                                            if (lastInst.Equals(lastText, StringComparison.CurrentCulture))
+                                            {
+                                                lastMatch = true;
+                                            }
+                                        }
+                                    }
+
+                                    //check if text after instruction part is correct
+                                    bool nextMatch = false;
+                                    if (curInstPart == allInstParts.Count - 1) nextMatch = true; //if the instruction part is the last, match
+                                    else
+                                    {
+                                        //if the next instruction part is a space, make sure the text is as well
+                                        if (nextInst == " " && allTextParts[curTextPart + 1] == " ")
+                                        {
+                                            nextMatch = true;
+                                        }
+                                        //else if the next instruction is a variable
+                                        else if (nextInst[0] == '<' && nextInst[nextInst.Length - 1] == '>')
+                                        {
+                                            nextMatch = true;
+                                        }
+                                        //else find the next text part that is a space and check
+                                        else
+                                        {
+                                            //find the next text part that is not a space
+                                            string nextText = " ";
+                                            for (int i = curTextPart + 1; i < allTextParts.Count && nextText == " "; i++)
+                                            {
+                                                nextText = allTextParts[i];
+                                            }
+                                            //check if the last text part matches the last instruction part
+                                            if (nextInst.Equals(nextText, StringComparison.CurrentCulture))
+                                            {
+                                                nextMatch = true;
+                                            }
+                                        }
+                                    }
+
+                                    if (lastMatch && nextMatch)
+                                    {
+                                        instMatch = true;
+                                    }
+                                }
+
+                                curTextPart++;
+                            }
+
+                            //if the instruction matches and there is a child code piece open, complete it
+                            if (instMatch && childCodePieceResult != null)
+                            {
+                                int childEnd = 0;
+                                for (int i = 0; i < curTextPart - 1; i++)
+                                {
+                                    childEnd += allTextParts[i].Length;
+                                }
+                                if (lastInst == " ") childEnd--;
+
+                                CodePiece cp = childCodePieces.Last<CodePiece>();
+
+                                cp.EndLocation = childEnd;
+                                if (cp.EndLocation - cp.StartLocation >= 0)
+                                {
+                                    cp.Text = instructionText.Substring(cp.StartLocation, cp.EndLocation - cp.StartLocation);
+                                }
+
+                                CodePiece tempCp = FindMatchingFramework(cp.Text, childCodePieceResult);
+                                if (tempCp != null)
+                                {
+                                    cp.Framework = tempCp.Framework;
+                                    cp.ChildPieces = tempCp.ChildPieces;
+                                }
+
+                                childCodePieceResult = null;
+                            }
+
+                            txtMatch = instMatch;
+                        }
+
+                            /*txtMatch = false;
+                            while (curTextPart < allTextParts.Count && !txtMatch)
+                            {
+                                string curText = allTextParts[curTextPart];
+                                string lastText = allTextParts[curTextPart - 1];
+                                string curInst = allInstParts[curInstPart];
+                                string lastInst = allInstParts[curInstPart - 1];
+                                if (allTextParts[curTextPart].Equals(allInstParts[curInstPart], StringComparison.CurrentCultureIgnoreCase) &&
+                                    (allTextParts[curTextPart - 1].Equals(allInstParts[curInstPart - 1], StringComparison.CurrentCultureIgnoreCase) ||
+                                    (allInstParts[curInstPart - 1][0] == '<' && allInstParts[curInstPart - 1][allInstParts[curInstPart - 1].Length - 1] == '>')))
+                                {
+                                    txtMatch = true;
+                                    //close the open code piece
+                                    if (childCodePieceResult != null && allTextParts[curTextPart] != " ")
+                                    {
+                                        int childEnd = -1;
+                                        for (int i = 0; i < curTextPart; i++)
+                                        {
+                                            childEnd += allTextParts[i].Length;
+                                        }
+
+                                        CodePiece cp = childCodePieces.Last<CodePiece>();
+
+                                        cp.EndLocation = childEnd;
+                                        if (childEnd >= 0)
+                                        {
+                                            cp.Text = instructionText.Substring(cp.StartLocation, cp.EndLocation - cp.StartLocation);
+                                        }
+
+                                        CodePiece tempCp = FindMatchingFramework(cp.Text, childCodePieceResult);
+                                        if (tempCp != null)
+                                        {
+                                            cp.Framework = tempCp.Framework;
+                                        }
+
+                                        childCodePieceResult = null;
+                                    }
+                                }
+                                //else if the current instruction part starts with '<' and ends with '>'
+                                else if (allInstParts[curInstPart][0] == '<' && allInstParts[curInstPart][allInstParts[curInstPart].Length - 1] == '>')
+                                {
+                                    txtMatch = true;
+
+                                    int childStart = 0;
+                                    for (int i = 0; i < curTextPart; i++)
+                                    {
+                                        childStart += allTextParts[i].Length;
+                                    }
+
+                                    childCodePieces.Add(new CodePiece("", childStart, 0));
+                                    childCodePieceResult = allInstParts[curInstPart];
+
+                                }
+                                //else if the last instruction part starts with '<' and ends with '>'
+                                else if (allInstParts[curInstPart - 1][0] == '<' && allInstParts[curInstPart - 1][allInstParts[curInstPart - 1].Length - 1] == '>')
+                                {
+                                    txtMatch = true;
+                                }
+                                else if (allTextParts[curTextPart] == " " || allTextParts[curTextPart] == "")
+                                {
+
+                                }
+                                curTextPart++;
+                            }*/
                     }
 
                     if (txtMatch) //found a match!!!1!11!!
