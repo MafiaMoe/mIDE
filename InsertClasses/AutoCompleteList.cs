@@ -30,18 +30,19 @@ namespace mIDE.InsertClasses
         {
             //all instructions specified should have the MINIMAL required spacing
             if (Instructions == null) throw new Exception("Commands list not initialized");
-            //Instructions.Add(new InstructionFramework("PRINT", "PRINT <GET>.", Colors.Blue));
-            Instructions.Add(new InstructionFramework("PRINT", "PRINT <GET> AT(<INT.GET>,<INT.GET>).", null, Colors.Blue));
+            Instructions.Add(new InstructionFramework("PRINT AT", "PRINT <GET> AT(<INT.GET>,<INT.GET>).", null, Colors.Blue));
+            Instructions.Add(new InstructionFramework("PRINT", "PRINT <GET>.", null, Colors.Blue));
             //Instructions.Add(new InstructionFramework("AT", "AT", "<AT>", Colors.Blue));
-            Instructions.Add(new InstructionFramework("SET", "SET <OBJA.SET> TO <OBJA.GET>.", null, Colors.Plum));
-            Instructions.Add(new InstructionFramework("LOCK", "LOCK <OBJA.SET> TO <OBJA.GET>.", null, Colors.Red));
+            Instructions.Add(new InstructionFramework("SET TO", "SET <OBJA.SET> TO <OBJA.GET>.", null, Colors.Plum));
+            Instructions.Add(new InstructionFramework("LOCK TO", "LOCK <OBJA.SET> TO <OBJA.GET>.", null, Colors.Red));
             //Instructions.Add(new InstructionFramework("TO", "TO", "<TO>", Colors.Teal));
-            Instructions.Add(new InstructionFramework("LIST", "LIST <LIST.GET> IN <LIST.SET>.", null, Colors.Orange));
+            Instructions.Add(new InstructionFramework("LIST IN", "LIST <LIST.GET> IN <LIST.SET>.", null, Colors.Orange));
             //Instructions.Add(new InstructionFramework("IN", "IN", "<IN>", Colors.DarkOrange));
             Instructions.Add(new InstructionFramework("PIDLOOP", "PIDLOOP(<NUM>, <NUM>, <NUM>, <NUM>, <NUM>)", "<PIDLOOP.GET>", Colors.Green));
             Instructions.Add(new InstructionFramework("PIDLOOP", "PIDLOOP(<NUM>, <NUM>, <NUM>)", "<PIDLOOP.GET>", Colors.Green));
             Instructions.Add(new InstructionFramework("PIDLOOP", "PIDLOOP()", "<PIDLOOP.GET>", Colors.Green));
 
+            //Math and string operations
             Instructions.Add(new InstructionFramework("+", "<NUM.GET>+<NUM.GET>", "<NUM.GET>", Colors.Teal));
             Instructions.Add(new InstructionFramework("+", "<STR.GET>+<NUM.GET>", "<STR.GET>", Colors.Teal));
             Instructions.Add(new InstructionFramework("+", "<NUM.GET>+<STR.GET>", "<STR.GET>", Colors.Teal));
@@ -50,7 +51,6 @@ namespace mIDE.InsertClasses
             Instructions.Add(new InstructionFramework("-", "<NUM.GET>*<NUM.GET>", "<NUM.GET>", Colors.Teal));
             Instructions.Add(new InstructionFramework("-", "<NUM.GET>/<NUM.GET>", "<NUM.GET>", Colors.Teal));
             Instructions.Add(new InstructionFramework("(", "(<GET>)", "<GET>", Colors.Teal));
-            //Instructions.Add(new InstructionFramework("\"", "\"<>\"", "<STR.GET>", Colors.Teal));
 
             //Constants
             Instructions.Add(new InstructionFramework("CONSTANT", "CONSTANT", "<CONSTANT.GET>", Colors.Blue));
@@ -96,6 +96,22 @@ namespace mIDE.InsertClasses
             Instructions.Add(new InstructionFramework("SQRMAGNITUDE", "<VECTOR.GET>:SQRMAGNITUDE", "<NUM.GET>", Colors.Blue));
             Instructions.Add(new InstructionFramework("DIRECTION", "<VECTOR.GET>:DIRECTION", "<NUM.GET.SET>", Colors.Blue));
             Instructions.Add(new InstructionFramework("VEC", "<VECTOR.GET>:VEC", "<VECTOR.GET>", Colors.Blue));
+
+            //Vector operations
+            Instructions.Add(new InstructionFramework("*", "<NUM.GET>*<VECTOR.GET>", "<VECTOR.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("*", "<VECTOR.GET>*<NUM.GET>", "<VECTOR.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("*", "<VECTOR.GET>*<VECTOR.GET>", "<NUM.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("+", "<VECTOR.GET>+<VECTOR.GET>", "<VECTOR.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("-", "<VECTOR.GET>-<VECTOR.GET>", "<VECTOR.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("-", "-<VECTOR.GET>", "<VECTOR.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("VDOT", "VDOT(<VECTOR.GET>,<VECTOR.GET>)", "<NUM.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("VECTORDOTPRODUCT", "VECTORDOTPRODUCT(<VECTOR.GET>,<VECTOR.GET>)", "<NUM.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("VCRS", "VCRS(<VECTOR.GET>,<VECTOR.GET>)", "<VECTOR.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("VECTORCROSSPRODUCT", "VECTORCROSSPRODUCT(<VECTOR.GET>,<VECTOR.GET>)", "<VECTOR.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("VANG", "VANG(<VECTOR.GET>,<VECTOR.GET>)", "<NUM.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("VECTORANGLE", "VECTORANGLE(<VECTOR.GET>,<VECTOR.GET>)", "<NUM.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("VXCL", "VXCL(<VECTOR.GET>,<VECTOR.GET>)", "<VECTOR.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("VECTOREXCLUDE", "VECTOREXCLUDE(<VECTOR.GET>,<VECTOR.GET>)", "<VECTOR.GET>", Colors.Blue));
 
             /*if (AutoCompleteLinks == null) throw new Exception("AutoComplete list not initialized");
             //AutoCompleteLinks.Add(new InsertLink("<VAR>", "testVariable", null));
@@ -186,12 +202,12 @@ namespace mIDE.InsertClasses
             }*/
         }
 
-        private bool ResultCheck(string expected, string check)
+        public bool ResultCheck(string expected, string check)
         {
             if (expected == null && check == null) return true;
             if (expected == null || check == null) return false;
-            if (expected[0] != '<' || expected[expected.Length - 1] != '>') throw new Exception("Expected issue");
-            if (check[0] != '<' || check[check.Length - 1] != '>') throw new Exception("Check issue");
+            if (expected[0] != '<' || expected[expected.Length - 1] != '>') return false;//throw new Exception("Expected issue");
+            if (check[0] != '<' || check[check.Length - 1] != '>') return false;//throw new Exception("Check issue");
 
             string[] reqs = expected.Remove(0, 1).Remove(expected.Length - 2, 1).Split('.');
             string[] cprops = check.Remove(0, 1).Remove(check.Length - 2, 1).Split('.');

@@ -40,12 +40,12 @@ namespace mIDE
 
             //test
             //docShow.Text = "variable + \"string\"";
-            docShow.Text = "PRINT \"hello\" + \" world\" AT(0, 1).";
-            cmdList.Instructions.Add(new InstructionFramework("variable", "variable", "<INT.GET>", Colors.Linen));
+            //docShow.Text = "PRINT \"hello\" + \" world\" AT(0, 1).";
+            //cmdList.Instructions.Add(new InstructionFramework("variable", "variable", "<INT.GET>", Colors.Linen));
             //ShowDocument(docShow);
             //CodePiece cp = cmdList.FindMatchingFramework(docShow.Text, "<STR.GET>");
-            CodePiece cp = cmdList.FindMatchingFramework(docShow.Text, null);
-            cp.Framework = cp.Framework;
+            //CodePiece cp = cmdList.FindMatchingFramework(docShow.Text, null);
+            //cp.Framework = cp.Framework;//breakpoint
         }
 
         private void ShowDocument(ActiveDocument doc)
@@ -124,15 +124,19 @@ namespace mIDE
         private string CaretWord = null;
         private int CaretWordStart = 0, CaretWordEnd = 0;
         private int CaretLocationInWord = 0;
+        string[] lineSplitStrings = new string[4] { ".\r", ". ", ".\v", ".\t" };
         private bool UpdateCaretText()
         {
             string[] returning = new string[2];
             string allLines;
             OpenCode.Document.GetText(Windows.UI.Text.TextGetOptions.None, out allLines);
-            allLines.Replace('\v', '\r');
-            string[] splitLines = allLines.Split('\r');
+            string[] splitLines = allLines.Split(lineSplitStrings, StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < splitLines.Length; i++)
+            {
+                if (splitLines[i][splitLines[i].Length - 1] != '.') { splitLines[i] += '.'; }
+            }
 
-            UpdateLineNumbers(splitLines.Length);
+            UpdateLineNumbers(allLines.Count(x => x == '\r' || x == '\v') + 1);
 
             //find the line that the caret is on
             int lineOffset = 0;
@@ -168,6 +172,7 @@ namespace mIDE
                 else
                 {
                     CaretWord = splitWords[currentWord];
+                    if (CaretWord.Length > 0 && CaretWord.Last() == '\r') { CaretWord = CaretWord.Remove(CaretWord.Length - 1); }
                     CaretWordStart = wordOffset;
                     CaretWordEnd = wordOffset + splitWords[currentWord].Length;
                     CaretLocationInWord = OpenCode.Document.Selection.StartPosition - wordOffset;
@@ -191,8 +196,27 @@ namespace mIDE
             autoCompleteRemove = "";
             if (CaretWord != "")
             {
-                //search for auto complete
-                if (CaretLocationInWord == CaretWord.Length)
+                //search for matching framework
+                CodePiece cp = cmdList.FindMatchingFramework(CaretLine, null);
+                if (cp != null && cp.Framework != null)
+                {
+                    bool found = true;
+                    //if variable and it is not set, search for matching variables
+                    foreach (InstructionFramework frame in cmdList.Instructions)
+                    {
+                        if (cmdList.ResultCheck(CaretWord, frame.Result))
+                        {
+                            autofillListBox.Items.Add(new ListBoxItem { Padding = new Thickness(3), BorderThickness = new Thickness(0.1), Height = 24, Content = frame.Framework });
+                            //autofillListBox.Items.Add(cmd.name);
+                            autoCompleteRemove = CaretWord;
+                            autofillListBox.SelectedIndex = 0;
+                        }
+                    }
+
+                    //if variable is set
+                }
+                //if no framework, search for autocomplete framework
+                else if (CaretLocationInWord == CaretWord.Length)
                 {
                     //search for exact commands and fill the autocomplete
                     List<InstructionFramework> exactFrame = cmdList.findExactInstruction(CaretWord);
@@ -245,7 +269,7 @@ namespace mIDE
             SearchAllLinesForErrors(); //TODO : set to search caret line for errors when that is available
         }
 
-        private char[] stringSeparators = new char[7] { ' ', '(', ')', ',', '.', '\t', ':'};
+        private char[] stringSeparators = new char[7] { ' ', '(', ')', ',', '\r', '\t', ':'};
         private void SearchLineForCommands(int lineStart, int lineEnd)
         {
             //search for commands from back to front
