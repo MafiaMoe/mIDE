@@ -32,12 +32,12 @@ namespace mIDE.InsertClasses
             if (Instructions == null) throw new Exception("Commands list not initialized");
             //Instructions.Add(new InstructionFramework("PRINT", "PRINT <GET>.", Colors.Blue));
             Instructions.Add(new InstructionFramework("PRINT", "PRINT <GET> AT(<INT.GET>,<INT.GET>).", null, Colors.Blue));
-            Instructions.Add(new InstructionFramework("AT", "AT", "<AT>", Colors.Blue));
+            //Instructions.Add(new InstructionFramework("AT", "AT", "<AT>", Colors.Blue));
             Instructions.Add(new InstructionFramework("SET", "SET <OBJA.SET> TO <OBJA.GET>.", null, Colors.Plum));
             Instructions.Add(new InstructionFramework("LOCK", "LOCK <OBJA.SET> TO <OBJA.GET>.", null, Colors.Red));
-            Instructions.Add(new InstructionFramework("TO", "TO", "<TO>", Colors.Teal));
+            //Instructions.Add(new InstructionFramework("TO", "TO", "<TO>", Colors.Teal));
             Instructions.Add(new InstructionFramework("LIST", "LIST <LIST.GET> IN <LIST.SET>.", null, Colors.Orange));
-            Instructions.Add(new InstructionFramework("IN", "IN", "<IN>", Colors.DarkOrange));
+            //Instructions.Add(new InstructionFramework("IN", "IN", "<IN>", Colors.DarkOrange));
             Instructions.Add(new InstructionFramework("PIDLOOP", "PIDLOOP(<NUM>, <NUM>, <NUM>, <NUM>, <NUM>)", "<PIDLOOP.GET>", Colors.Green));
             Instructions.Add(new InstructionFramework("PIDLOOP", "PIDLOOP(<NUM>, <NUM>, <NUM>)", "<PIDLOOP.GET>", Colors.Green));
             Instructions.Add(new InstructionFramework("PIDLOOP", "PIDLOOP()", "<PIDLOOP.GET>", Colors.Green));
@@ -50,7 +50,52 @@ namespace mIDE.InsertClasses
             Instructions.Add(new InstructionFramework("-", "<NUM.GET>*<NUM.GET>", "<NUM.GET>", Colors.Teal));
             Instructions.Add(new InstructionFramework("-", "<NUM.GET>/<NUM.GET>", "<NUM.GET>", Colors.Teal));
             Instructions.Add(new InstructionFramework("(", "(<GET>)", "<GET>", Colors.Teal));
-            Instructions.Add(new InstructionFramework("\"", "\"\"", "<STR.GET>", Colors.Teal));
+            //Instructions.Add(new InstructionFramework("\"", "\"<>\"", "<STR.GET>", Colors.Teal));
+
+            //Constants
+            Instructions.Add(new InstructionFramework("CONSTANT", "CONSTANT", "<CONSTANT.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("G", "<CONSTANT.GET>:G", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("E", "<CONSTANT.GET>:E", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("PI", "<CONSTANT.GET>:PI", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("C", "<CONSTANT.GET>:C", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("ATMTOKPA", "<CONSTANT.GET>:ATMTOKPA", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("KPATOATM", "<CONSTANT.GET>:KPATOATM", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("DEGTORAD", "<CONSTANT.GET>:DEGTORAD", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("RADTODEG", "<CONSTANT.GET>:RADTODEG", "<NUM.GET>", Colors.Teal));
+
+            //Math functions
+            Instructions.Add(new InstructionFramework("ABS", "ABS(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("CEILING", "CEILING(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("FLOOR", "FLOOR(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("LN", "LN(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("LOG10", "LOG10(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("MOD", "MOD(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("MIN", "MIN(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("MAX", "MAX(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("RANDOM", "RANDOM()", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("ROUND", "ROUND(<NUM.GET>", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("ROUND", "ROUND(<NUM.GET>,<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("SQRT", "SQRT(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+
+            //Trig functions
+            Instructions.Add(new InstructionFramework("SIN", "SIN(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("COS", "COS(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("TAN", "TAN(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("ARCSIN", "ARCSIN(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("ARCCOS", "ARCCOS(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("ARCTAN", "ARCTAN(<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("ARCTAN2", "ARCTAN2(<NUM.GET>,<NUM.GET>)", "<NUM.GET>", Colors.Teal));
+
+            //Vector
+            Instructions.Add(new InstructionFramework("V", "V(<NUM.GET>,<NUM.GET>,<NUM.GET>)", "<VECTOR.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("X", "<VECTOR.GET>:X", "<NUM.GET.SET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("Y", "<VECTOR.GET>:Y", "<NUM.GET.SET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("Z", "<VECTOR.GET>:Z", "<NUM.GET.SET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("MAG", "<VECTOR.GET>:MAG", "<NUM.GET.SET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("NORMALIZED", "<VECTOR.GET>:NORMALIZED", "<VECTOR.GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("SQRMAGNITUDE", "<VECTOR.GET>:SQRMAGNITUDE", "<NUM.GET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("DIRECTION", "<VECTOR.GET>:DIRECTION", "<NUM.GET.SET>", Colors.Blue));
+            Instructions.Add(new InstructionFramework("VEC", "<VECTOR.GET>:VEC", "<VECTOR.GET>", Colors.Blue));
 
             /*if (AutoCompleteLinks == null) throw new Exception("AutoComplete list not initialized");
             //AutoCompleteLinks.Add(new InsertLink("<VAR>", "testVariable", null));
@@ -194,7 +239,10 @@ namespace mIDE.InsertClasses
                 if (textParts[i] != "") { allTextParts.Add(textParts[i]); }
                 allTextParts.Add(str[offset].ToString());
             }
-            allTextParts.Add(textParts[textParts.Length - 1]);
+            if (textParts[textParts.Length - 1] != "")
+            {
+                allTextParts.Add(textParts[textParts.Length - 1]);
+            }
 
             return allTextParts;
         }
@@ -225,7 +273,6 @@ namespace mIDE.InsertClasses
 
                     //check to make sure all parts are accounted for
                     int curTextPart = 0;
-                    int lastTextPartAccountedFor = 0;
                     bool txtMatch = true; //true until proven wrong
                     for (int curInstPart = 0; curInstPart < allInstParts.Count && txtMatch; curInstPart++)
                     {
@@ -333,7 +380,7 @@ namespace mIDE.InsertClasses
                             }
 
                             //if the instruction matches and there is a child code piece open, complete it
-                            if (instMatch && childCodePieceResult != null)
+                            if (txtMatch && childCodePieceResult != null)
                             {
                                 int childEnd = 0;
                                 for (int i = 0; i < curTextPart - 1; i++)
@@ -350,11 +397,14 @@ namespace mIDE.InsertClasses
                                     cp.Text = instructionText.Substring(cp.StartLocation, cp.EndLocation - cp.StartLocation);
                                 }
 
-                                CodePiece tempCp = FindMatchingFramework(cp.Text, childCodePieceResult);
-                                if (tempCp != null)
+                                if (cp.Text != instructionText)
                                 {
-                                    cp.Framework = tempCp.Framework;
-                                    cp.ChildPieces = tempCp.ChildPieces;
+                                    CodePiece tempCp = FindMatchingFramework(cp.Text, childCodePieceResult);
+                                    if (tempCp != null)
+                                    {
+                                        cp.Framework = tempCp.Framework;
+                                        cp.ChildPieces = tempCp.ChildPieces;
+                                    }
                                 }
 
                                 childCodePieceResult = null;
@@ -363,155 +413,103 @@ namespace mIDE.InsertClasses
                             txtMatch = instMatch;
                         }
 
-                            /*txtMatch = false;
-                            while (curTextPart < allTextParts.Count && !txtMatch)
+                        /*txtMatch = false;
+                        while (curTextPart < allTextParts.Count && !txtMatch)
+                        {
+                            string curText = allTextParts[curTextPart];
+                            string lastText = allTextParts[curTextPart - 1];
+                            string curInst = allInstParts[curInstPart];
+                            string lastInst = allInstParts[curInstPart - 1];
+                            if (allTextParts[curTextPart].Equals(allInstParts[curInstPart], StringComparison.CurrentCultureIgnoreCase) &&
+                                (allTextParts[curTextPart - 1].Equals(allInstParts[curInstPart - 1], StringComparison.CurrentCultureIgnoreCase) ||
+                                (allInstParts[curInstPart - 1][0] == '<' && allInstParts[curInstPart - 1][allInstParts[curInstPart - 1].Length - 1] == '>')))
                             {
-                                string curText = allTextParts[curTextPart];
-                                string lastText = allTextParts[curTextPart - 1];
-                                string curInst = allInstParts[curInstPart];
-                                string lastInst = allInstParts[curInstPart - 1];
-                                if (allTextParts[curTextPart].Equals(allInstParts[curInstPart], StringComparison.CurrentCultureIgnoreCase) &&
-                                    (allTextParts[curTextPart - 1].Equals(allInstParts[curInstPart - 1], StringComparison.CurrentCultureIgnoreCase) ||
-                                    (allInstParts[curInstPart - 1][0] == '<' && allInstParts[curInstPart - 1][allInstParts[curInstPart - 1].Length - 1] == '>')))
+                                txtMatch = true;
+                                //close the open code piece
+                                if (childCodePieceResult != null && allTextParts[curTextPart] != " ")
                                 {
-                                    txtMatch = true;
-                                    //close the open code piece
-                                    if (childCodePieceResult != null && allTextParts[curTextPart] != " ")
-                                    {
-                                        int childEnd = -1;
-                                        for (int i = 0; i < curTextPart; i++)
-                                        {
-                                            childEnd += allTextParts[i].Length;
-                                        }
-
-                                        CodePiece cp = childCodePieces.Last<CodePiece>();
-
-                                        cp.EndLocation = childEnd;
-                                        if (childEnd >= 0)
-                                        {
-                                            cp.Text = instructionText.Substring(cp.StartLocation, cp.EndLocation - cp.StartLocation);
-                                        }
-
-                                        CodePiece tempCp = FindMatchingFramework(cp.Text, childCodePieceResult);
-                                        if (tempCp != null)
-                                        {
-                                            cp.Framework = tempCp.Framework;
-                                        }
-
-                                        childCodePieceResult = null;
-                                    }
-                                }
-                                //else if the current instruction part starts with '<' and ends with '>'
-                                else if (allInstParts[curInstPart][0] == '<' && allInstParts[curInstPart][allInstParts[curInstPart].Length - 1] == '>')
-                                {
-                                    txtMatch = true;
-
-                                    int childStart = 0;
+                                    int childEnd = -1;
                                     for (int i = 0; i < curTextPart; i++)
                                     {
-                                        childStart += allTextParts[i].Length;
+                                        childEnd += allTextParts[i].Length;
                                     }
 
-                                    childCodePieces.Add(new CodePiece("", childStart, 0));
-                                    childCodePieceResult = allInstParts[curInstPart];
+                                    CodePiece cp = childCodePieces.Last<CodePiece>();
 
-                                }
-                                //else if the last instruction part starts with '<' and ends with '>'
-                                else if (allInstParts[curInstPart - 1][0] == '<' && allInstParts[curInstPart - 1][allInstParts[curInstPart - 1].Length - 1] == '>')
-                                {
-                                    txtMatch = true;
-                                }
-                                else if (allTextParts[curTextPart] == " " || allTextParts[curTextPart] == "")
-                                {
+                                    cp.EndLocation = childEnd;
+                                    if (childEnd >= 0)
+                                    {
+                                        cp.Text = instructionText.Substring(cp.StartLocation, cp.EndLocation - cp.StartLocation);
+                                    }
 
+                                    CodePiece tempCp = FindMatchingFramework(cp.Text, childCodePieceResult);
+                                    if (tempCp != null)
+                                    {
+                                        cp.Framework = tempCp.Framework;
+                                    }
+
+                                    childCodePieceResult = null;
                                 }
-                                curTextPart++;
-                            }*/
+                            }
+                            //else if the current instruction part starts with '<' and ends with '>'
+                            else if (allInstParts[curInstPart][0] == '<' && allInstParts[curInstPart][allInstParts[curInstPart].Length - 1] == '>')
+                            {
+                                txtMatch = true;
+
+                                int childStart = 0;
+                                for (int i = 0; i < curTextPart; i++)
+                                {
+                                    childStart += allTextParts[i].Length;
+                                }
+
+                                childCodePieces.Add(new CodePiece("", childStart, 0));
+                                childCodePieceResult = allInstParts[curInstPart];
+
+                            }
+                            //else if the last instruction part starts with '<' and ends with '>'
+                            else if (allInstParts[curInstPart - 1][0] == '<' && allInstParts[curInstPart - 1][allInstParts[curInstPart - 1].Length - 1] == '>')
+                            {
+                                txtMatch = true;
+                            }
+                            else if (allTextParts[curTextPart] == " " || allTextParts[curTextPart] == "")
+                            {
+
+                            }
+                            curTextPart++;
+                        }*/
                     }
 
                     if (txtMatch) //found a match!!!1!11!!
                     {
+                        //finish if there is an open child
+                        if (childCodePieceResult != null)
+                        {
+                            int childEnd = instructionText.Length;
+
+                            CodePiece cp = childCodePieces.Last<CodePiece>();
+
+                            cp.EndLocation = childEnd;
+                            if (cp.EndLocation - cp.StartLocation >= 0)
+                            {
+                                cp.Text = instructionText.Substring(cp.StartLocation, cp.EndLocation - cp.StartLocation);
+                            }
+
+                            CodePiece tempCp = FindMatchingFramework(cp.Text, childCodePieceResult);
+                            if (tempCp != null)
+                            {
+                                cp.Framework = tempCp.Framework;
+                                cp.ChildPieces = tempCp.ChildPieces;
+                            }
+
+                            childCodePieceResult = null;
+                        }
+
+                        //set in matching instruction to return
                         returning.Framework = Instructions[ic];
                         returning.ChildPieces = childCodePieces;
                     }
                 }
             }
-
-            /*int curTextPartInspection = -1;
-            for (int ic = 0; ic < Instructions.Count; ic++)
-            {
-                if (ResultCheck(expectedResult, Instructions[ic].Result))
-                {
-                    bool findingMatch = true;
-                    string[] instParts = Instructions[ic].Framework.Split(frameworkSeparators);
-                    char[] instSeperators = new char[instParts.Length - 1];
-                    offset = -1;
-                    for (int i = 0; i < instParts.Length - 1; i++)
-                    {
-                        offset += instParts[i].Length + 1;
-                        instSeperators[i] = Instructions[ic].Framework[offset];
-                    }
-
-                    //collect any areas in the text that need to be saved as child code pieces
-                    List<CodePiece> childCodePieces = new List<CodePiece>();
-                    bool codePieceOpen = false;
-
-                    for (int iff = 0; iff < instParts.Length && findingMatch; iff++)
-                    {
-                        //check if the text matches the instruction
-                        string instPart = instParts[iff];
-
-                        //if instruction part is text
-                        if (instPart[0] != '<' && instPart[instPart.Length - 1] != '>')
-                        {
-                            int textPartInspection = FindMatchingString(instPart, textParts);
-                            
-                            //if the instruction exists in the correct order as a textPart, move on
-                            if (textPartInspection > curTextPartInspection)
-                            {
-                                //check separators
-                                //spacable separators
-
-                                //non-spacable separators
-
-                                curTextPartInspection = textPartInspection;
-                            }
-                            //else stop searching for a match
-                            else
-                            {
-                                findingMatch = false;
-                            }
-                        }
-                        //if instruction is part of a variableTree
-                        else if (instPart[0] == '<' && (instPart[instPart.Length - 1] == '>' || instPart.Substring(instPart.Length - 2, 2) == ">."))
-                        {
-                            //create a new code part
-                            childCodePieces.Add(new CodePiece("", -1, -1));
-
-                            int childStart = 0;
-                            for (int i = 0; i < curTextPartInspection; i++)
-                            {
-                                childStart += textParts[i].Length + 1;
-                            }
-                            childCodePieces[childCodePieces.Count - 1].StartLocation = childStart;
-
-                            codePieceOpen = true;
-                        }
-                        else
-                        {
-                            throw new Exception("instruction is not correctly configured");
-                        }
-                    }
-
-                    if (findingMatch)
-                    {
-                        //!!!! Found a match !!!!
-                        match = Instructions[ic];
-                    }
-                }
-            }
-
-            returning.Framework = match;*/
 
             return returning;
         }
@@ -528,8 +526,8 @@ namespace mIDE.InsertClasses
             //check for framework
             for (int instNum = 0; instNum < instructions.Count; instNum++)
             {
-                CodePiece code = FindMatchingFramework(instructions[instNum].Text, null);
-                instructions[instNum].Framework = (code == null ? null : code.Framework);
+                //CodePiece code = FindMatchingFramework(instructions[instNum].Text, null);
+                //instructions[instNum].Framework = (code == null ? null : code.Framework);
             }
 
             //check for labels not implemented
@@ -564,71 +562,7 @@ namespace mIDE.InsertClasses
             //check for variable not existing
 
             //check funcion implementation errors
-            /*for (int lineNum = 0; lineNum < fileLines.Length; lineNum++)
-            {
-                string[] strs = fileLines[lineNum].Split(stringSeparators);
 
-                for (int i = 0; i < strs.Length; i++)
-                {
-                    foreach (Function func in Functions)
-                    {
-                        //find the function name
-                        if (strs[i] == func.name)
-                        {
-                            string variableType = null;
-                            string variableName = null;
-                            //find other parts of the function
-                            string[] funcParts = func.succeedingString.Split(stringSeparators);
-                            int si = i + 1;
-                            int fi = 0;
-                            bool match = true;
-                            while (fi < funcParts.Length && match)
-                            {
-                                //if nothing in function part, move on to next function part
-                                if (funcParts[fi] == "") { fi++; }
-                                //if nothing left in the strings, no match
-                                else if (si > strs.Length) { match = false; }
-                                //if nothing in string part, move on to next string part
-                                else if (strs[si] == "") { si++; }
-                                //if the string parts match, move on with match check
-                                else if (strs[si].Equals(funcParts[fi], 
-                                    StringComparison.CurrentCultureIgnoreCase)) { fi++; si++; }
-                                //if the string is a parameter, save the parameter values and move on
-                                else if (strs[si][0] == '<' && strs[si][strs[si].Length - 1] == '>')
-                                { si++; fi++; variableType = strs[si]; variableName = funcParts[fi]; }
-                                //if the string is a variable that should already be set, check, move on
-                                else if (strs[si][0] == '^' && strs[si][strs[si].Length - 1] == '^')
-                                {
-                                    bool linkFound = false;
-                                    foreach (InsertLink IL in findAutoCompleteLinks(strs[si]))
-                                    {
-                                        if (IL.LinkString.Equals(funcParts[fi], 
-                                            StringComparison.CurrentCultureIgnoreCase))
-                                        {
-                                            linkFound = true;
-                                            break;
-                                        }
-                                    }
-                                    //add error
-                                    if (!linkFound)
-                                    {
-                                        returning.Add(new AutoCheckError(filePath,
-                                            lineNum, 0, 0, 
-                                            "Not defined : " + funcParts[fi]));
-                                    }
-                                    si++; fi++;
-                                }
-                                else { match = false; }
-                            }
-                            //if a match was made, set any variable found to a new autocomplete
-                            if (match)
-                            {
-                                var yay = true;
-                            }
-                        }
-                    }
-                }
-            }*/
             return returning;
         }
 
