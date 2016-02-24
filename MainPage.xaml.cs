@@ -557,6 +557,22 @@ namespace mIDE
                     //is never called
                     if (SelectNextAutocomplete(e)) { e.Handled = true; }
                     break;
+                case VirtualKey.Right:
+                case VirtualKey.Left:
+                    //for these keys, break
+                    break;
+                default:
+                    //for all other keys, check if inside an undefined variable
+                    if (CaretWord.Length > 1 && CaretWord.First() == '<' && CaretWord.Last() == '>' &&
+                        CaretLocationInWord >= 0 && CaretLocationInWord <= CaretWord.Length)
+                    {
+                        //remove undefined variable and insert blank
+                        string insert = "";
+                        OpenCode.Document.GetRange(CaretWordStart, CaretWordEnd).Text = insert;
+                        OpenCode.Document.Selection.StartPosition += insert.Length;
+                        OpenCode.Document.Selection.EndPosition = OpenCode.Document.Selection.StartPosition;
+                    }
+                    break;
             }
         }
     }

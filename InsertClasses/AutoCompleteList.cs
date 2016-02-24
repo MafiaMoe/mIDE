@@ -51,6 +51,7 @@ namespace mIDE.InsertClasses
             Instructions.Add(new InstructionFramework("-", "<NUM.GET>*<NUM.GET>", "<NUM.GET>", Colors.Teal));
             Instructions.Add(new InstructionFramework("-", "<NUM.GET>/<NUM.GET>", "<NUM.GET>", Colors.Teal));
             Instructions.Add(new InstructionFramework("(", "(<GET>)", "<GET>", Colors.Teal));
+            Instructions.Add(new InstructionFramework("", "<INT.GET>", "<NUM.GET>", Colors.Teal));
 
             //Constants
             Instructions.Add(new InstructionFramework("CONSTANT", "CONSTANT", "<CONSTANT.GET>", Colors.Blue));
