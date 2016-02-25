@@ -108,8 +108,9 @@ namespace mIDE.DocumentHelpers
             while (document.Remove(0, curIndex).Contains("//"))
             {
                 int comStart = document.IndexOf("//", curIndex);
-                int comEnd = document.IndexOf("\n", comStart);
+                int comEnd = document.IndexOf("\r", comStart);
                 returning.Add(new CodePiece(document.Substring(comStart, comEnd - comStart), comStart, comEnd));
+                curIndex = comEnd;
             }
 
             return returning;

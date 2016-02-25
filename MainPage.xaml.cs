@@ -329,6 +329,7 @@ namespace mIDE
         string autoCompleteRemove = "";
         private bool InsertAutocomplete()
         {
+            if (autofillListBox.Items.Count == 0) return false;
             var selectedAutofillItem = autofillListBox.Items[autofillListBox.SelectedIndex] as ListBoxItem;
             //if (autofillListBox.Items.Count > 0 && autofillListBox.Items[autofillListBox.SelectedIndex].ToString() != "")
             if (autofillListBox.Items.Count > 0 && selectedAutofillItem.Content as string != "")
@@ -563,7 +564,7 @@ namespace mIDE
                     break;
                 default:
                     //for all other keys, check if inside an undefined variable
-                    if (CaretWord.Length > 1 && CaretWord.First() == '<' && CaretWord.Last() == '>' &&
+                    if (CaretWord.Length > 4 && CaretWord.First() == '<' && CaretWord.Last() == '>' &&
                         CaretLocationInWord >= 0 && CaretLocationInWord <= CaretWord.Length)
                     {
                         //remove undefined variable and insert blank

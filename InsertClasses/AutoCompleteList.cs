@@ -559,13 +559,13 @@ namespace mIDE.InsertClasses
                 {
                     if (strs[i].Length > 0 && (strs[i][0] == '<'))
                     {
-                        if (strs[i][strs[i].Length - 1] == '>')
+                        if (strs[i].Length > 4 && strs[i][strs[i].Length - 1] == '>')
                         {
                             returning.Add(new AutoCheckError(doc.FilePath,
                                 instNum, startError, startError + strs[i].Length,
                                 "Not set : " + strs[i], ErrorSeverity.none));
                         }
-                        if (strs[i].Length > 1 && strs[i].Substring(strs[i].Length - 2, 2) == ">.")
+                        if (strs[i].Length > 5 && strs[i].Substring(strs[i].Length - 2, 2) == ">.")
                         {
                             returning.Add(new AutoCheckError(doc.FilePath,
                                 instNum, startError, startError + strs[i].Length - 1,
